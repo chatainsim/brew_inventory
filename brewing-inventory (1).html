@@ -1,0 +1,1883 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brewing Inventory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --bg-dark: #0a0a0a;
+            --bg-card: #1a1a1a;
+            --accent-amber: #ff9500;
+            --accent-gold: #ffc940;
+            --text-primary: #ffffff;
+            --text-muted: #a0a0a0;
+            --border-subtle: #2a2a2a;
+            --malt-color: #d97706;
+            --houblon-color: #10b981;
+            --levure-color: #ec4899;
+            --autre-color: #8b5cf6;
+        }
+        
+        body {
+            font-family: 'Work Sans', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1200 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255, 149, 0, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 201, 64, 0.02) 0%, transparent 50%);
+            animation: drift 60s ease-in-out infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes drift {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(1deg); }
+            66% { transform: translate(-20px, 20px) rotate(-1deg); }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .animate-fade-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+        
+        .animate-slide-in {
+            animation: slideIn 0.6s ease-out forwards;
+        }
+        
+        .stagger-1 { animation-delay: 0.1s; opacity: 0; }
+        .stagger-2 { animation-delay: 0.2s; opacity: 0; }
+        .stagger-3 { animation-delay: 0.3s; opacity: 0; }
+        .stagger-4 { animation-delay: 0.4s; opacity: 0; }
+        
+        h1, h2 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+        }
+        
+        .glass-card {
+            background: rgba(26, 26, 26, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .glass-card:hover {
+            border-color: rgba(255, 149, 0, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+        
+        .category-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.2s ease;
+        }
+        
+        .category-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        
+        .malt {
+            background: rgba(217, 119, 6, 0.15);
+            color: var(--malt-color);
+            border: 1px solid rgba(217, 119, 6, 0.3);
+        }
+        
+        .malt::before { background: var(--malt-color); }
+        
+        .houblon {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--houblon-color);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .houblon::before { background: var(--houblon-color); }
+        
+        .levure {
+            background: rgba(236, 72, 153, 0.15);
+            color: var(--levure-color);
+            border: 1px solid rgba(236, 72, 153, 0.3);
+        }
+        
+        .levure::before { background: var(--levure-color); }
+        
+        .autre {
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--autre-color);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+        
+        .autre::before { background: var(--autre-color); }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-amber) 0%, var(--accent-gold) 100%);
+            color: #000;
+            font-weight: 600;
+            padding: 12px 28px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            box-shadow: 0 4px 15px rgba(255, 149, 0, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(255, 149, 0, 0.5);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            font-weight: 500;
+            padding: 12px 28px;
+            border-radius: 10px;
+            border: 1px solid var(--border-subtle);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 149, 0, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        input, select {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            padding: 12px 16px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-family: 'Work Sans', sans-serif;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-amber);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 0 3px rgba(255, 149, 0, 0.1);
+        }
+        
+        input::placeholder {
+            color: rgba(160, 160, 160, 0.5);
+        }
+        
+        .filter-btn {
+            padding: 10px 20px;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+        }
+        
+        .filter-btn.active {
+            background: linear-gradient(135deg, var(--accent-amber) 0%, var(--accent-gold) 100%);
+            color: #000;
+            border-color: transparent;
+            font-weight: 600;
+        }
+        
+        .tab-container {
+            display: flex;
+            gap: 0;
+            background: rgba(26, 26, 26, 0.4);
+            padding: 6px;
+            border-radius: 12px;
+            overflow-x: auto;
+            border: 1px solid var(--border-subtle);
+        }
+        
+        .tab-button {
+            flex: 1;
+            min-width: 120px;
+            padding: 14px 24px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+            font-size: 0.95rem;
+            border-radius: 8px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .tab-button::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-amber), var(--accent-gold));
+            border-radius: 3px 3px 0 0;
+            transition: width 0.3s ease;
+        }
+        
+        .tab-button:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .tab-button.active {
+            color: var(--text-primary);
+            background: rgba(255, 149, 0, 0.15);
+            font-weight: 600;
+        }
+        
+        .tab-button.active::before {
+            width: 80%;
+        }
+        
+        .tab-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 24px;
+            height: 24px;
+            padding: 0 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-button.active .tab-badge {
+            background: rgba(0, 0, 0, 0.3);
+            color: var(--accent-gold);
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeInUp 0.4s ease-out;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .collapsible-section {
+            margin-bottom: 2rem;
+        }
+        
+        .collapsible-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            background: rgba(26, 26, 26, 0.4);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .collapsible-header:hover {
+            background: rgba(26, 26, 26, 0.6);
+            border-color: rgba(255, 149, 0, 0.3);
+        }
+        
+        .collapsible-header.active {
+            border-radius: 12px 12px 0 0;
+            border-bottom-color: transparent;
+            background: rgba(26, 26, 26, 0.6);
+        }
+        
+        .collapsible-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .collapsible-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+            color: var(--accent-amber);
+        }
+        
+        .collapsible-header.active .collapsible-icon {
+            transform: rotate(180deg);
+        }
+        
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background: rgba(26, 26, 26, 0.4);
+            border: 1px solid var(--border-subtle);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+        }
+        
+        .collapsible-content.active {
+            max-height: 1000px;
+            transition: max-height 0.5s ease-in;
+        }
+        
+        .collapsible-inner {
+            padding: 1.5rem;
+        }
+        
+        .inventory-item {
+            background: rgba(26, 26, 26, 0.4);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .inventory-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-amber);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .inventory-item:hover {
+            background: rgba(26, 26, 26, 0.7);
+            border-color: rgba(255, 149, 0, 0.3);
+            transform: translateX(4px);
+        }
+        
+        .inventory-item:hover::before {
+            opacity: 1;
+        }
+        
+        .delete-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .delete-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .quantity-input {
+            width: 100px;
+            text-align: right;
+            font-weight: 700;
+            font-size: 1.1rem;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 28px;
+            background: linear-gradient(180deg, var(--accent-amber) 0%, var(--accent-gold) 100%);
+            border-radius: 2px;
+        }
+        
+        .status-message {
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-top: 12px;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .status-success {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+        
+        .status-error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+        
+        .status-info {
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #3b82f6;
+        }
+        
+        .icon-wrapper {
+            font-size: 1.2rem;
+            filter: grayscale(0.2) brightness(1.2);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        
+        .empty-state::before {
+            content: '🍺';
+            font-size: 4rem;
+            display: block;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+        
+        /* Modern Form Styles */
+        .form-group {
+            position: relative;
+        }
+        
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .label-icon {
+            font-size: 1.1rem;
+        }
+        
+        .label-hint {
+            margin-left: auto;
+            font-size: 0.75rem;
+            color: var(--accent-amber);
+            text-transform: none;
+            font-weight: 500;
+            letter-spacing: normal;
+        }
+        
+        .form-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--border-subtle);
+            color: var(--text-primary);
+            padding: 14px 18px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-family: 'Work Sans', sans-serif;
+            font-size: 1rem;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-amber);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 4px rgba(255, 149, 0, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .form-input::placeholder {
+            color: rgba(160, 160, 160, 0.5);
+        }
+        
+        .select-wrapper {
+            position: relative;
+        }
+        
+        .select-wrapper::after {
+            content: '▼';
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: var(--accent-amber);
+            font-size: 0.75rem;
+        }
+        
+        .form-select {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--border-subtle);
+            color: var(--text-primary);
+            padding: 14px 18px;
+            padding-right: 45px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-family: 'Work Sans', sans-serif;
+            font-size: 1rem;
+            appearance: none;
+            cursor: pointer;
+        }
+        
+        .form-select:focus {
+            outline: none;
+            border-color: var(--accent-amber);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 4px rgba(255, 149, 0, 0.1);
+        }
+        
+        .form-select option {
+            background: #1a1a1a;
+            color: var(--text-primary);
+            padding: 10px;
+        }
+        
+        .btn-add-item {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-amber) 0%, var(--accent-gold) 100%);
+            color: #000;
+            font-weight: 700;
+            padding: 16px 32px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.95rem;
+            letter-spacing: 0.05em;
+            box-shadow: 0 4px 15px rgba(255, 149, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-add-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .btn-add-item:hover::before {
+            left: 100%;
+        }
+        
+        .btn-add-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 149, 0, 0.5);
+        }
+        
+        .btn-add-item:active {
+            transform: translateY(0);
+        }
+        
+        .btn-icon {
+            font-size: 1.2rem;
+        }
+        
+        .btn-arrow {
+            margin-left: auto;
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .btn-add-item:hover .btn-arrow {
+            transform: translateX(4px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4 py-8 max-w-7xl relative z-10">
+        <!-- Header -->
+        <div class="glass-card p-8 mb-8 animate-fade-up">
+            <div class="flex items-center justify-between flex-wrap gap-4">
+                <div>
+                    <h1 class="text-5xl mb-2 bg-gradient-to-r from-amber-500 to-yellow-400 bg-clip-text text-transparent">
+                        Brewing Inventory
+                    </h1>
+                    <p class="text-gray-400 text-lg">Gérez vos ingrédients avec style</p>
+                </div>
+                <div class="icon-wrapper text-6xl">🍺</div>
+            </div>
+        </div>
+
+        <!-- GitHub Configuration - Collapsible -->
+        <div class="collapsible-section animate-fade-up stagger-1">
+            <div class="collapsible-header" onclick="toggleCollapsible('config')">
+                <div class="collapsible-title">
+                    <span>⚙️</span>
+                    <span>Configuration GitHub</span>
+                </div>
+                <div class="collapsible-icon">▼</div>
+            </div>
+            <div class="collapsible-content" id="collapsible-config">
+                <div class="collapsible-inner">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-2">Token GitHub</label>
+                            <input type="password" id="githubToken" placeholder="ghp_..." class="w-full">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-2">Repository</label>
+                            <input type="text" id="githubRepo" placeholder="username/brewing-inventory" class="w-full">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-2">Fichier de données</label>
+                            <input type="text" id="githubFile" value="inventory.json" class="w-full">
+                        </div>
+                        <div class="flex items-end gap-3">
+                            <button onclick="loadFromGitHub()" class="btn-secondary flex-1">
+                                📥 Charger
+                            </button>
+                            <button onclick="saveToGitHub()" class="btn-primary flex-1">
+                                💾 Sauvegarder
+                            </button>
+                        </div>
+                    </div>
+                    <div id="githubStatus"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Import/Export - Collapsible -->
+        <div class="collapsible-section animate-fade-up stagger-2">
+            <div class="collapsible-header" onclick="toggleCollapsible('import')">
+                <div class="collapsible-title">
+                    <span>📦</span>
+                    <span>Import / Export</span>
+                </div>
+                <div class="collapsible-icon">▼</div>
+            </div>
+            <div class="collapsible-content" id="collapsible-import">
+                <div class="collapsible-inner">
+                    <div class="flex gap-3 flex-wrap">
+                        <button onclick="exportToJSON()" class="btn-secondary">
+                            📤 Export JSON
+                        </button>
+                        <button onclick="exportToCSV()" class="btn-secondary">
+                            📊 Export CSV
+                        </button>
+                        <label class="btn-secondary cursor-pointer">
+                            📥 Import JSON
+                            <input type="file" accept=".json" onchange="importFromJSON(event)" class="hidden">
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Item Form -->
+        <div class="glass-card p-8 mb-8 animate-fade-up stagger-3">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold bg-gradient-to-r from-amber-500 to-yellow-400 bg-clip-text text-transparent">
+                    Nouvel Ingrédient
+                </h2>
+                <div class="text-3xl">➕</div>
+            </div>
+            
+            <div class="space-y-6">
+                <!-- Row 1: Category and Name -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span class="label-icon">📁</span>
+                            <span>Catégorie</span>
+                        </label>
+                        <div class="select-wrapper">
+                            <select id="itemCategory" class="form-select">
+                                <option value="malt">🌾 Malt</option>
+                                <option value="houblon">🌿 Houblon</option>
+                                <option value="levure">🧬 Levure</option>
+                                <option value="autre">✨ Autre</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span class="label-icon">🏷️</span>
+                            <span>Nom</span>
+                            <span class="label-hint">💡 Suggestions disponibles</span>
+                        </label>
+                        <input type="text" id="itemName" placeholder="Ex: Pilsner Malt, Cascade..." class="form-input">
+                    </div>
+                </div>
+                
+                <!-- Row 2: Quantity and Unit -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span class="label-icon">⚖️</span>
+                            <span>Quantité</span>
+                        </label>
+                        <input type="number" id="itemQuantity" placeholder="1000" step="0.01" class="form-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span class="label-icon">📏</span>
+                            <span>Unité</span>
+                        </label>
+                        <div class="select-wrapper">
+                            <select id="itemUnit" class="form-select">
+                                <option value="g">grammes (g)</option>
+                                <option value="kg">kilogrammes (kg)</option>
+                                <option value="L">litres (L)</option>
+                                <option value="mL">millilitres (mL)</option>
+                                <option value="unité">unité</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Row 3: Origin and Notes -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span class="label-icon">🌍</span>
+                            <span>Origine / Variété</span>
+                        </label>
+                        <input type="text" id="itemOrigin" placeholder="Ex: USA, Allemagne, Fermentis..." class="form-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span class="label-icon">📝</span>
+                            <span>Notes</span>
+                        </label>
+                        <input type="text" id="itemNotes" placeholder="Notes optionnelles" class="form-input">
+                    </div>
+                </div>
+                
+                <!-- Submit Button -->
+                <div class="pt-4">
+                    <button onclick="addItem()" class="btn-add-item">
+                        <span class="btn-icon">➕</span>
+                        <span>Ajouter l'ingrédient</span>
+                        <span class="btn-arrow">→</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <div class="glass-card p-4 mb-8 animate-fade-up stagger-4">
+            <div class="tab-container">
+                <button onclick="switchTab('all')" class="tab-button active" id="tab-all">
+                    <span>Tous</span>
+                    <span class="tab-badge" id="badge-all">0</span>
+                </button>
+                <button onclick="switchTab('malt')" class="tab-button" id="tab-malt">
+                    <span>🌾 Malts</span>
+                    <span class="tab-badge" id="badge-malt">0</span>
+                </button>
+                <button onclick="switchTab('houblon')" class="tab-button" id="tab-houblon">
+                    <span>🌿 Houblons</span>
+                    <span class="tab-badge" id="badge-houblon">0</span>
+                </button>
+                <button onclick="switchTab('levure')" class="tab-button" id="tab-levure">
+                    <span>🧬 Levures</span>
+                    <span class="tab-badge" id="badge-levure">0</span>
+                </button>
+                <button onclick="switchTab('autre')" class="tab-button" id="tab-autre">
+                    <span>✨ Autres</span>
+                    <span class="tab-badge" id="badge-autre">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Inventory List -->
+        <div class="glass-card p-6 animate-fade-up stagger-4">
+            <h2 class="section-title">Inventaire</h2>
+            
+            <!-- Tab Content: All -->
+            <div id="content-all" class="tab-content active">
+                <div id="inventoryList-all" class="space-y-3"></div>
+                <div id="emptyMessage-all" class="empty-state">
+                    Aucun ingrédient dans l'inventaire
+                </div>
+            </div>
+            
+            <!-- Tab Content: Malt -->
+            <div id="content-malt" class="tab-content">
+                <div id="inventoryList-malt" class="space-y-3"></div>
+                <div id="emptyMessage-malt" class="empty-state">
+                    Aucun malt dans l'inventaire
+                </div>
+            </div>
+            
+            <!-- Tab Content: Houblon -->
+            <div id="content-houblon" class="tab-content">
+                <div id="inventoryList-houblon" class="space-y-3"></div>
+                <div id="emptyMessage-houblon" class="empty-state">
+                    Aucun houblon dans l'inventaire
+                </div>
+            </div>
+            
+            <!-- Tab Content: Levure -->
+            <div id="content-levure" class="tab-content">
+                <div id="inventoryList-levure" class="space-y-3"></div>
+                <div id="emptyMessage-levure" class="empty-state">
+                    Aucune levure dans l'inventaire
+                </div>
+            </div>
+            
+            <!-- Tab Content: Autre -->
+            <div id="content-autre" class="tab-content">
+                <div id="inventoryList-autre" class="space-y-3"></div>
+                <div id="emptyMessage-autre" class="empty-state">
+                    Aucun autre ingrédient dans l'inventaire
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let inventory = [];
+        let currentTab = 'all';
+        let githubSha = null;
+
+        // Predefined ingredient lists
+        const ingredientDatabase = {
+            malt: [
+                // Base Malts
+                { name: 'Pilsner Malt', origin: 'Allemagne' },
+                { name: 'Pale Ale Malt', origin: 'UK' },
+                { name: 'Pale Malt 2-Row', origin: 'USA' },
+                { name: 'Pale Malt 6-Row', origin: 'USA' },
+                { name: 'Maris Otter', origin: 'UK' },
+                { name: 'Golden Promise', origin: 'UK' },
+                { name: 'Vienna Malt', origin: 'Autriche' },
+                { name: 'Munich Malt Type I', origin: 'Allemagne' },
+                { name: 'Munich Malt Type II', origin: 'Allemagne' },
+                { name: 'Wheat Malt', origin: 'Allemagne' },
+                { name: 'Wheat Malt', origin: 'Belgique' },
+                { name: 'Rye Malt (Seigle)', origin: 'Allemagne' },
+                { name: 'Oat Malt (Avoine)', origin: 'UK' },
+                { name: 'Mild Ale Malt', origin: 'UK' },
+                { name: 'Marris Otter Heritage', origin: 'UK' },
+                
+                // Crystal/Caramel Malts
+                { name: 'Caramel/Crystal 10L', origin: 'USA' },
+                { name: 'Caramel/Crystal 20L', origin: 'USA' },
+                { name: 'Caramel/Crystal 30L', origin: 'USA' },
+                { name: 'Caramel/Crystal 40L', origin: 'USA' },
+                { name: 'Caramel/Crystal 60L', origin: 'USA' },
+                { name: 'Caramel/Crystal 80L', origin: 'USA' },
+                { name: 'Caramel/Crystal 120L', origin: 'USA' },
+                { name: 'Caramel Pils', origin: 'Allemagne' },
+                { name: 'Caramunich I', origin: 'Allemagne' },
+                { name: 'Caramunich II', origin: 'Allemagne' },
+                { name: 'Caramunich III', origin: 'Allemagne' },
+                { name: 'Caravienne', origin: 'Belgique' },
+                { name: 'Cara Red', origin: 'Allemagne' },
+                { name: 'Cara Hell', origin: 'Allemagne' },
+                { name: 'Cara Aroma', origin: 'Allemagne' },
+                { name: 'Cara Bohemian', origin: 'Allemagne' },
+                { name: 'Carafoam', origin: 'Allemagne' },
+                { name: 'Crystal Medium', origin: 'UK' },
+                { name: 'Crystal Dark', origin: 'UK' },
+                
+                // Roasted/Dark Malts
+                { name: 'Chocolate Malt', origin: 'UK' },
+                { name: 'Chocolate Malt', origin: 'USA' },
+                { name: 'Chocolate Rye', origin: 'Allemagne' },
+                { name: 'Chocolate Wheat', origin: 'Allemagne' },
+                { name: 'Black Malt', origin: 'UK' },
+                { name: 'Black Patent Malt', origin: 'USA' },
+                { name: 'Roasted Barley', origin: 'UK' },
+                { name: 'Carafa I', origin: 'Allemagne' },
+                { name: 'Carafa II', origin: 'Allemagne' },
+                { name: 'Carafa III', origin: 'Allemagne' },
+                { name: 'Carafa Special I', origin: 'Allemagne' },
+                { name: 'Carafa Special II', origin: 'Allemagne' },
+                { name: 'Carafa Special III', origin: 'Allemagne' },
+                { name: 'Midnight Wheat', origin: 'USA' },
+                { name: 'Blackprinz', origin: 'Allemagne' },
+                
+                // Specialty Malts
+                { name: 'Amber Malt', origin: 'UK' },
+                { name: 'Brown Malt', origin: 'UK' },
+                { name: 'Biscuit Malt', origin: 'Belgique' },
+                { name: 'Victory Malt', origin: 'USA' },
+                { name: 'Aromatic Malt', origin: 'Belgique' },
+                { name: 'Melanoidin Malt', origin: 'Allemagne' },
+                { name: 'Special B', origin: 'Belgique' },
+                { name: 'Abbey Malt', origin: 'Belgique' },
+                { name: 'Munich Malt', origin: 'Belgique' },
+                { name: 'Honey Malt', origin: 'Canada' },
+                { name: 'Gambrinus Honey', origin: 'Canada' },
+                { name: 'Briess Victory', origin: 'USA' },
+                { name: 'Briess Special Roast', origin: 'USA' },
+                
+                // Acidulated/Technical Malts
+                { name: 'Acidulated Malt (Sauermalz)', origin: 'Allemagne' },
+                { name: 'Acid Malt', origin: 'Weyermann' },
+                
+                // Smoked Malts
+                { name: 'Beechwood Smoked Malt', origin: 'Allemagne' },
+                { name: 'Rauchmalz', origin: 'Allemagne' },
+                { name: 'Cherry Smoked Malt', origin: 'USA' },
+                { name: 'Peated Malt', origin: 'UK' },
+                { name: 'Mesquite Smoked Malt', origin: 'USA' },
+                
+                // Torrified/Flaked Grains
+                { name: 'Torrified Wheat', origin: 'UK' },
+                { name: 'Torrified Barley', origin: 'UK' },
+                { name: 'Flaked Oats', origin: 'USA' },
+                { name: 'Flaked Barley', origin: 'UK' },
+                { name: 'Flaked Wheat', origin: 'USA' },
+                { name: 'Flaked Rye', origin: 'USA' },
+                { name: 'Flaked Corn (Maize)', origin: 'USA' },
+                { name: 'Flaked Rice', origin: 'USA' },
+                
+                // Other Specialty
+                { name: 'Dextrin Malt (Cara-Pils)', origin: 'USA' },
+                { name: 'Light Munich', origin: 'Allemagne' },
+                { name: 'Dark Munich', origin: 'Allemagne' },
+                { name: 'Pale Chocolate', origin: 'UK' },
+                { name: 'Extra Pale Malt', origin: 'Belgique' },
+                { name: 'Château Pilsen', origin: 'Belgique' },
+                { name: 'Château Munich', origin: 'Belgique' },
+                { name: 'Château Vienna', origin: 'Belgique' },
+                { name: 'Château Wheat', origin: 'Belgique' },
+                { name: 'Château Café', origin: 'Belgique' }
+            ],
+            houblon: [
+                // American Hops
+                { name: 'Cascade', origin: 'USA' },
+                { name: 'Centennial', origin: 'USA' },
+                { name: 'Chinook', origin: 'USA' },
+                { name: 'Columbus (CTZ)', origin: 'USA' },
+                { name: 'Tomahawk (CTZ)', origin: 'USA' },
+                { name: 'Zeus (CTZ)', origin: 'USA' },
+                { name: 'Citra', origin: 'USA' },
+                { name: 'Mosaic', origin: 'USA' },
+                { name: 'Simcoe', origin: 'USA' },
+                { name: 'Amarillo', origin: 'USA' },
+                { name: 'Warrior', origin: 'USA' },
+                { name: 'Magnum', origin: 'USA' },
+                { name: 'Nugget', origin: 'USA' },
+                { name: 'Willamette', origin: 'USA' },
+                { name: 'Mt. Hood', origin: 'USA' },
+                { name: 'Liberty', origin: 'USA' },
+                { name: 'Crystal', origin: 'USA' },
+                { name: 'Sterling', origin: 'USA' },
+                { name: 'Vanguard', origin: 'USA' },
+                { name: 'Azacca', origin: 'USA' },
+                { name: 'El Dorado', origin: 'USA' },
+                { name: 'Ekuanot (Equinox)', origin: 'USA' },
+                { name: 'Lemondrop', origin: 'USA' },
+                { name: 'Pekko', origin: 'USA' },
+                { name: 'Sabro', origin: 'USA' },
+                { name: 'Idaho 7', origin: 'USA' },
+                { name: 'Strata', origin: 'USA' },
+                { name: 'Sultana', origin: 'USA' },
+                { name: 'Talus', origin: 'USA' },
+                { name: 'Triumph', origin: 'USA' },
+                { name: 'Glacier', origin: 'USA' },
+                { name: 'Santiam', origin: 'USA' },
+                { name: 'Summit', origin: 'USA' },
+                { name: 'Apollo', origin: 'USA' },
+                { name: 'Bravo', origin: 'USA' },
+                { name: 'HBC 472', origin: 'USA' },
+                { name: 'Cashmere', origin: 'USA' },
+                { name: 'Comet', origin: 'USA' },
+                
+                // German Hops
+                { name: 'Hallertau Mittelfrüh', origin: 'Allemagne' },
+                { name: 'Hallertau Tradition', origin: 'Allemagne' },
+                { name: 'Hallertau Hersbrucker', origin: 'Allemagne' },
+                { name: 'Hallertau Blanc', origin: 'Allemagne' },
+                { name: 'Tettnanger', origin: 'Allemagne' },
+                { name: 'Spalt', origin: 'Allemagne' },
+                { name: 'Perle', origin: 'Allemagne' },
+                { name: 'Northern Brewer', origin: 'Allemagne' },
+                { name: 'Magnum', origin: 'Allemagne' },
+                { name: 'Merkur', origin: 'Allemagne' },
+                { name: 'Opal', origin: 'Allemagne' },
+                { name: 'Polaris', origin: 'Allemagne' },
+                { name: 'Herkules', origin: 'Allemagne' },
+                { name: 'Taurus', origin: 'Allemagne' },
+                { name: 'Callista', origin: 'Allemagne' },
+                { name: 'Mandarina Bavaria', origin: 'Allemagne' },
+                { name: 'Huell Melon', origin: 'Allemagne' },
+                { name: 'Saphir', origin: 'Allemagne' },
+                { name: 'Select', origin: 'Allemagne' },
+                { name: 'Smaragd', origin: 'Allemagne' },
+                
+                // UK Hops
+                { name: 'East Kent Golding', origin: 'UK' },
+                { name: 'Fuggle', origin: 'UK' },
+                { name: 'Challenger', origin: 'UK' },
+                { name: 'Target', origin: 'UK' },
+                { name: 'First Gold', origin: 'UK' },
+                { name: 'Admiral', origin: 'UK' },
+                { name: 'Bramling Cross', origin: 'UK' },
+                { name: 'Phoenix', origin: 'UK' },
+                { name: 'Progress', origin: 'UK' },
+                { name: 'Northdown', origin: 'UK' },
+                { name: 'Pilgrim', origin: 'UK' },
+                { name: 'Pioneer', origin: 'UK' },
+                { name: 'Sovereign', origin: 'UK' },
+                { name: 'Whitbread Golding Variety', origin: 'UK' },
+                { name: 'Jester', origin: 'UK' },
+                { name: 'Olicana', origin: 'UK' },
+                { name: 'Endeavour', origin: 'UK' },
+                { name: 'Godiva', origin: 'UK' },
+                
+                // Czech Hops
+                { name: 'Saaz', origin: 'République Tchèque' },
+                { name: 'Premiant', origin: 'République Tchèque' },
+                { name: 'Sladek', origin: 'République Tchèque' },
+                { name: 'Kazbek', origin: 'République Tchèque' },
+                
+                // New Zealand Hops
+                { name: 'Nelson Sauvin', origin: 'Nouvelle-Zélande' },
+                { name: 'Motueka', origin: 'Nouvelle-Zélande' },
+                { name: 'Riwaka', origin: 'Nouvelle-Zélande' },
+                { name: 'Wakatu', origin: 'Nouvelle-Zélande' },
+                { name: 'Wai-iti', origin: 'Nouvelle-Zélande' },
+                { name: 'Kohatu', origin: 'Nouvelle-Zélande' },
+                { name: 'Rakau', origin: 'Nouvelle-Zélande' },
+                { name: 'Pacifica', origin: 'Nouvelle-Zélande' },
+                { name: 'Pacific Jade', origin: 'Nouvelle-Zélande' },
+                { name: 'Pacific Gem', origin: 'Nouvelle-Zélande' },
+                { name: 'Taiheke', origin: 'Nouvelle-Zélande' },
+                { name: 'Nectaron', origin: 'Nouvelle-Zélande' },
+                
+                // Australian Hops
+                { name: 'Galaxy', origin: 'Australie' },
+                { name: 'Ella', origin: 'Australie' },
+                { name: 'Vic Secret', origin: 'Australie' },
+                { name: 'Enigma', origin: 'Australie' },
+                { name: 'Topaz', origin: 'Australie' },
+                { name: 'Summer', origin: 'Australie' },
+                { name: 'Pride of Ringwood', origin: 'Australie' },
+                { name: 'Helga', origin: 'Australie' },
+                
+                // Slovenian Hops
+                { name: 'Styrian Golding', origin: 'Slovénie' },
+                { name: 'Bobek', origin: 'Slovénie' },
+                { name: 'Celeia', origin: 'Slovénie' },
+                { name: 'Aurora', origin: 'Slovénie' },
+                
+                // French Hops
+                { name: 'Strisselspalt', origin: 'France' },
+                { name: 'Aramis', origin: 'France' },
+                { name: 'Mistral', origin: 'France' },
+                { name: 'Triskel', origin: 'France' },
+                { name: 'Barbe Rouge', origin: 'France' },
+                { name: 'Elixir', origin: 'France' },
+                
+                // Polish Hops
+                { name: 'Lubelski', origin: 'Pologne' },
+                { name: 'Marynka', origin: 'Pologne' },
+                
+                // Japanese Hops
+                { name: 'Sorachi Ace', origin: 'Japon' },
+                
+                // Belgian Hops
+                { name: 'Brewers Gold', origin: 'Belgique' },
+                { name: 'Hallertau', origin: 'Belgique' }
+            ],
+            levure: [
+                // Fermentis Dry Yeasts
+                { name: 'Safale US-05', origin: 'Fermentis - American Ale' },
+                { name: 'Safale S-04', origin: 'Fermentis - English Ale' },
+                { name: 'Safale S-33', origin: 'Fermentis - General Purpose Ale' },
+                { name: 'Safale K-97', origin: 'Fermentis - German Ale' },
+                { name: 'Safbrew WB-06', origin: 'Fermentis - Wheat Beer' },
+                { name: 'Safbrew T-58', origin: 'Fermentis - Belgian Specialty' },
+                { name: 'Safbrew S-33', origin: 'Fermentis - Belgian Ale' },
+                { name: 'Safbrew BE-134', origin: 'Fermentis - Belgian Saison' },
+                { name: 'Safbrew BE-256', origin: 'Fermentis - Belgian Abbey' },
+                { name: 'Safbrew LA-01', origin: 'Fermentis - Lager' },
+                { name: 'Saflager W-34/70', origin: 'Fermentis - West European Lager' },
+                { name: 'Saflager S-23', origin: 'Fermentis - West European Lager' },
+                { name: 'Saflager S-189', origin: 'Fermentis - Swiss Lager' },
+                { name: 'Saflager W-68', origin: 'Fermentis - Bavarian Wheat' },
+                
+                // Lallemand Dry Yeasts
+                { name: 'Lallemand Nottingham', origin: 'Lallemand - English Ale' },
+                { name: 'Lallemand Windsor', origin: 'Lallemand - English Ale' },
+                { name: 'Lallemand Belle Saison', origin: 'Lallemand - Belgian Saison' },
+                { name: 'Lallemand Abbaye', origin: 'Lallemand - Belgian Abbey' },
+                { name: 'Lallemand Munich Classic', origin: 'Lallemand - Bavarian Lager' },
+                { name: 'Lallemand Diamond Lager', origin: 'Lallemand - Lager' },
+                { name: 'Lallemand BRY-97', origin: 'Lallemand - American West Coast' },
+                { name: 'Lallemand New England', origin: 'Lallemand - NEIPA' },
+                { name: 'Lallemand Verdant IPA', origin: 'Lallemand - IPA' },
+                { name: 'Lallemand Voss Kveik', origin: 'Lallemand - Kveik' },
+                { name: 'Lallemand Koln', origin: 'Lallemand - Kölsch' },
+                { name: 'Lallemand Munich Wheat', origin: 'Lallemand - Weizen' },
+                { name: 'Lallemand Farmhouse', origin: 'Lallemand - Saison' },
+                { name: 'Lallemand LalBrew Wit', origin: 'Lallemand - Witbier' },
+                { name: 'Lallemand Danstar CBC-1', origin: 'Lallemand - Bottle Conditioning' },
+                
+                // Mangrove Jack's Dry Yeasts
+                { name: 'Mangrove Jack M42 - New World Strong Ale', origin: 'Mangrove Jack' },
+                { name: 'Mangrove Jack M44 - US West Coast Ale', origin: 'Mangrove Jack' },
+                { name: 'Mangrove Jack M36 - Liberty Bell Ale', origin: 'Mangrove Jack' },
+                { name: 'Mangrove Jack M15 - Empire Ale', origin: 'Mangrove Jack' },
+                { name: 'Mangrove Jack M76 - Bavarian Lager', origin: 'Mangrove Jack' },
+                { name: 'Mangrove Jack M84 - Bohemian Lager', origin: 'Mangrove Jack' },
+                { name: 'Mangrove Jack M20 - Bavarian Wheat', origin: 'Mangrove Jack' },
+                { name: 'Mangrove Jack M47 - Belgian Abbey', origin: 'Mangrove Jack' },
+                { name: 'Mangrove Jack M31 - Belgian Tripel', origin: 'Mangrove Jack' },
+                { name: 'Mangrove Jack M29 - French Saison', origin: 'Mangrove Jack' },
+                { name: 'Mangrove Jack M41 - Belgian Wit', origin: 'Mangrove Jack' },
+                
+                // Wyeast Liquid Yeasts
+                { name: 'Wyeast 1056 - American Ale', origin: 'Wyeast' },
+                { name: 'Wyeast 1272 - American Ale II', origin: 'Wyeast' },
+                { name: 'Wyeast 1098 - British Ale', origin: 'Wyeast' },
+                { name: 'Wyeast 1968 - London ESB', origin: 'Wyeast' },
+                { name: 'Wyeast 1318 - London Ale III', origin: 'Wyeast' },
+                { name: 'Wyeast 1332 - Northwest Ale', origin: 'Wyeast' },
+                { name: 'Wyeast 1450 - Denny\'s Favorite 50', origin: 'Wyeast' },
+                { name: 'Wyeast 2565 - Kölsch', origin: 'Wyeast' },
+                { name: 'Wyeast 2633 - Oktoberfest Lager', origin: 'Wyeast' },
+                { name: 'Wyeast 2124 - Bohemian Lager', origin: 'Wyeast' },
+                { name: 'Wyeast 2206 - Bavarian Lager', origin: 'Wyeast' },
+                { name: 'Wyeast 2308 - Munich Lager', origin: 'Wyeast' },
+                { name: 'Wyeast 3068 - Weihenstephan Weizen', origin: 'Wyeast' },
+                { name: 'Wyeast 3638 - Bavarian Wheat', origin: 'Wyeast' },
+                { name: 'Wyeast 3333 - German Wheat', origin: 'Wyeast' },
+                { name: 'Wyeast 3944 - Belgian Witbier', origin: 'Wyeast' },
+                { name: 'Wyeast 1214 - Belgian Abbey', origin: 'Wyeast' },
+                { name: 'Wyeast 3787 - Trappist High Gravity', origin: 'Wyeast' },
+                { name: 'Wyeast 1762 - Belgian Abbey II', origin: 'Wyeast' },
+                { name: 'Wyeast 3522 - Belgian Ardennes', origin: 'Wyeast' },
+                { name: 'Wyeast 3724 - Belgian Saison', origin: 'Wyeast' },
+                { name: 'Wyeast 3726 - Farmhouse Ale', origin: 'Wyeast' },
+                { name: 'Wyeast 3711 - French Saison', origin: 'Wyeast' },
+                
+                // White Labs Liquid Yeasts
+                { name: 'White Labs WLP001 - California Ale', origin: 'White Labs' },
+                { name: 'White Labs WLP002 - English Ale', origin: 'White Labs' },
+                { name: 'White Labs WLP004 - Irish Ale', origin: 'White Labs' },
+                { name: 'White Labs WLP007 - Dry English Ale', origin: 'White Labs' },
+                { name: 'White Labs WLP013 - London Ale', origin: 'White Labs' },
+                { name: 'White Labs WLP051 - California Ale V', origin: 'White Labs' },
+                { name: 'White Labs WLP060 - American Ale Blend', origin: 'White Labs' },
+                { name: 'White Labs WLP090 - San Diego Super Yeast', origin: 'White Labs' },
+                { name: 'White Labs WLP300 - Hefeweizen Ale', origin: 'White Labs' },
+                { name: 'White Labs WLP320 - American Hefeweizen', origin: 'White Labs' },
+                { name: 'White Labs WLP380 - Hefeweizen IV', origin: 'White Labs' },
+                { name: 'White Labs WLP400 - Belgian Wit', origin: 'White Labs' },
+                { name: 'White Labs WLP500 - Trappist Ale', origin: 'White Labs' },
+                { name: 'White Labs WLP530 - Abbey Ale', origin: 'White Labs' },
+                { name: 'White Labs WLP540 - Abbey IV', origin: 'White Labs' },
+                { name: 'White Labs WLP550 - Belgian Ale', origin: 'White Labs' },
+                { name: 'White Labs WLP565 - Belgian Saison I', origin: 'White Labs' },
+                { name: 'White Labs WLP566 - Belgian Saison II', origin: 'White Labs' },
+                { name: 'White Labs WLP568 - Belgian Saison Ale Blend', origin: 'White Labs' },
+                { name: 'White Labs WLP800 - Pilsner Lager', origin: 'White Labs' },
+                { name: 'White Labs WLP802 - Czech Budejovice Lager', origin: 'White Labs' },
+                { name: 'White Labs WLP810 - San Francisco Lager', origin: 'White Labs' },
+                { name: 'White Labs WLP820 - Oktoberfest/Märzen', origin: 'White Labs' },
+                { name: 'White Labs WLP830 - German Lager', origin: 'White Labs' },
+                { name: 'White Labs WLP833 - German Bock Lager', origin: 'White Labs' },
+                { name: 'White Labs WLP838 - Southern German Lager', origin: 'White Labs' },
+                { name: 'White Labs WLP029 - German Ale/Kölsch', origin: 'White Labs' },
+                
+                // Imperial Organic Yeasts
+                { name: 'Imperial A07 - Flagship', origin: 'Imperial - American Ale' },
+                { name: 'Imperial A24 - Dry Hop', origin: 'Imperial - IPA' },
+                { name: 'Imperial A38 - Juice', origin: 'Imperial - NEIPA' },
+                { name: 'Imperial B56 - Rustic', origin: 'Imperial - Farmhouse' },
+                { name: 'Imperial L13 - Global', origin: 'Imperial - Lager' },
+                { name: 'Imperial G03 - Dieter', origin: 'Imperial - German Lager' },
+                
+                // Other Specialty Yeasts
+                { name: 'Omega Hothead (OYL-057)', origin: 'Omega - Kveik' },
+                { name: 'Omega Lutra (OYL-071)', origin: 'Omega - Kveik' },
+                { name: 'Omega DIPA (OYL-052)', origin: 'Omega - IPA' },
+                { name: 'BrewFerm Blanche', origin: 'BrewFerm - Witbier' },
+                { name: 'Danstar Munich', origin: 'Danstar - Wheat Beer' }
+            ],
+            autre: [
+                // Sugars
+                { name: 'Sucre de candi blanc', origin: 'Belgique' },
+                { name: 'Sucre de candi brun foncé', origin: 'Belgique' },
+                { name: 'Sucre de candi brun clair', origin: 'Belgique' },
+                { name: 'Sucre de candi ambre', origin: 'Belgique' },
+                { name: 'Sirop de candi blanc', origin: 'Belgique' },
+                { name: 'Sirop de candi brun', origin: 'Belgique' },
+                { name: 'Sirop de candi D-45', origin: 'Belgique' },
+                { name: 'Sirop de candi D-90', origin: 'Belgique' },
+                { name: 'Sirop de candi D-180', origin: 'Belgique' },
+                { name: 'Miel toutes fleurs', origin: '' },
+                { name: 'Miel d\'acacia', origin: '' },
+                { name: 'Miel de châtaignier', origin: '' },
+                { name: 'Miel de lavande', origin: '' },
+                { name: 'Sirop d\'érable', origin: 'Canada' },
+                { name: 'Cassonade', origin: '' },
+                { name: 'Sucre roux', origin: '' },
+                { name: 'Sucre blanc', origin: '' },
+                { name: 'Dextrose (glucose)', origin: '' },
+                { name: 'Lactose', origin: '' },
+                { name: 'Mélasse', origin: '' },
+                { name: 'Sirop d\'agave', origin: '' },
+                { name: 'Turbinado', origin: '' },
+                { name: 'Demerara', origin: '' },
+                { name: 'Muscovado', origin: '' },
+                
+                // Flaked/Torrified Grains
+                { name: 'Flocons d\'avoine', origin: '' },
+                { name: 'Flocons de blé', origin: '' },
+                { name: 'Flocons d\'orge', origin: '' },
+                { name: 'Flocons de riz', origin: '' },
+                { name: 'Flocons de maïs', origin: '' },
+                { name: 'Flocons de seigle', origin: '' },
+                { name: 'Gritz de maïs', origin: '' },
+                { name: 'Riz brassicole', origin: '' },
+                
+                // Finings & Clarifiers
+                { name: 'Irish Moss', origin: '' },
+                { name: 'Whirlfloc', origin: '' },
+                { name: 'Clarity Ferm', origin: '' },
+                { name: 'Isinglass', origin: '' },
+                { name: 'Bentonite', origin: '' },
+                { name: 'Polyclar', origin: '' },
+                { name: 'Super Moss', origin: '' },
+                { name: 'Protafloc', origin: '' },
+                
+                // Water Treatment
+                { name: 'Gypse (Sulfate de calcium)', origin: '' },
+                { name: 'Chlorure de calcium', origin: '' },
+                { name: 'Sel d\'Epsom (Sulfate de magnésium)', origin: '' },
+                { name: 'Bicarbonate de sodium', origin: '' },
+                { name: 'Craie (Carbonate de calcium)', origin: '' },
+                { name: 'Chlorure de sodium (sel)', origin: '' },
+                { name: 'Acide lactique', origin: '' },
+                { name: 'Acide phosphorique', origin: '' },
+                { name: 'Acide citrique', origin: '' },
+                { name: 'Campden tablets (métabisulfite)', origin: '' },
+                
+                // Nutrients & Additives
+                { name: 'Nutriment de levure', origin: '' },
+                { name: 'Diammonium phosphate (DAP)', origin: '' },
+                { name: 'Servomyces', origin: '' },
+                { name: 'Zinc', origin: '' },
+                { name: 'Calcium', origin: '' },
+                
+                // Spices & Botanicals
+                { name: 'Coriandre (graines)', origin: '' },
+                { name: 'Écorces d\'orange amère (Curaçao)', origin: '' },
+                { name: 'Écorces d\'orange douce', origin: '' },
+                { name: 'Écorces de citron', origin: '' },
+                { name: 'Écorces de pamplemousse', origin: '' },
+                { name: 'Gingembre frais', origin: '' },
+                { name: 'Gingembre séché', origin: '' },
+                { name: 'Cardamome', origin: '' },
+                { name: 'Cannelle (bâtons)', origin: '' },
+                { name: 'Cannelle (poudre)', origin: '' },
+                { name: 'Clous de girofle', origin: '' },
+                { name: 'Noix de muscade', origin: '' },
+                { name: 'Anis étoilé', origin: '' },
+                { name: 'Graines de paradis', origin: '' },
+                { name: 'Poivre noir', origin: '' },
+                { name: 'Poivre de Sichuan', origin: '' },
+                { name: 'Piments séchés', origin: '' },
+                { name: 'Vanille (gousses)', origin: 'Madagascar' },
+                { name: 'Vanille (extrait)', origin: '' },
+                { name: 'Réglisse', origin: '' },
+                { name: 'Genièvre (baies)', origin: '' },
+                { name: 'Anis vert', origin: '' },
+                { name: 'Fenouil', origin: '' },
+                { name: 'Carvi', origin: '' },
+                { name: 'Fenugrec', origin: '' },
+                
+                // Coffee & Chocolate
+                { name: 'Café en grains', origin: '' },
+                { name: 'Café moulu', origin: '' },
+                { name: 'Cold brew coffee', origin: '' },
+                { name: 'Expresso', origin: '' },
+                { name: 'Cacao nibs', origin: '' },
+                { name: 'Cacao en poudre', origin: '' },
+                { name: 'Chocolat noir', origin: '' },
+                { name: 'Cacao brut', origin: '' },
+                
+                // Fruits
+                { name: 'Cerise (Kriek)', origin: '' },
+                { name: 'Framboise', origin: '' },
+                { name: 'Fraise', origin: '' },
+                { name: 'Myrtille', origin: '' },
+                { name: 'Mûre', origin: '' },
+                { name: 'Cassis', origin: '' },
+                { name: 'Pêche', origin: '' },
+                { name: 'Abricot', origin: '' },
+                { name: 'Mangue', origin: '' },
+                { name: 'Fruit de la passion', origin: '' },
+                { name: 'Ananas', origin: '' },
+                { name: 'Noix de coco', origin: '' },
+                { name: 'Banane', origin: '' },
+                { name: 'Citron', origin: '' },
+                { name: 'Lime', origin: '' },
+                { name: 'Orange', origin: '' },
+                { name: 'Pamplemousse', origin: '' },
+                { name: 'Purée de fruits', origin: '' },
+                
+                // Wood & Oak
+                { name: 'Copeaux de chêne américain (toasté léger)', origin: 'USA' },
+                { name: 'Copeaux de chêne américain (toasté moyen)', origin: 'USA' },
+                { name: 'Copeaux de chêne américain (toasté fort)', origin: 'USA' },
+                { name: 'Copeaux de chêne français (toasté léger)', origin: 'France' },
+                { name: 'Copeaux de chêne français (toasté moyen)', origin: 'France' },
+                { name: 'Copeaux de chêne français (toasté fort)', origin: 'France' },
+                { name: 'Spirales de chêne', origin: '' },
+                { name: 'Cubes de chêne', origin: '' },
+                { name: 'Douelles de chêne', origin: '' },
+                { name: 'Chêne hongrois', origin: 'Hongrie' },
+                { name: 'Cerisier (bois)', origin: '' },
+                { name: 'Bois de cèdre', origin: '' },
+                
+                // Other
+                { name: 'Extrait de malt liquide (LME)', origin: '' },
+                { name: 'Extrait de malt sec (DME)', origin: '' },
+                { name: 'Extrait de blé', origin: '' },
+                { name: 'Gélatine', origin: '' },
+                { name: 'Agar-agar', origin: '' },
+                { name: 'Pectinase', origin: '' },
+                { name: 'Amylase', origin: '' },
+                { name: 'Glucoamylase', origin: '' },
+                { name: 'Ascorbic acid (vitamine C)', origin: '' },
+                { name: 'Métabisulfite de potassium', origin: '' }
+            ]
+        };
+
+        // Load from localStorage on start
+        window.onload = function() {
+            const saved = localStorage.getItem('brewingInventory');
+            if (saved) {
+                inventory = JSON.parse(saved);
+                renderAllTabs();
+            }
+            
+            // Load GitHub config
+            const token = localStorage.getItem('githubToken');
+            const repo = localStorage.getItem('githubRepo');
+            const file = localStorage.getItem('githubFile');
+            if (token) document.getElementById('githubToken').value = token;
+            if (repo) document.getElementById('githubRepo').value = repo;
+            if (file) document.getElementById('githubFile').value = file;
+            
+            // Setup autocomplete
+            setupAutocomplete();
+        };
+
+        function setupAutocomplete() {
+            const nameInput = document.getElementById('itemName');
+            const categorySelect = document.getElementById('itemCategory');
+            const originInput = document.getElementById('itemOrigin');
+            const datalistId = 'ingredientSuggestions';
+            
+            // Create datalist element
+            let datalist = document.getElementById(datalistId);
+            if (!datalist) {
+                datalist = document.createElement('datalist');
+                datalist.id = datalistId;
+                document.body.appendChild(datalist);
+            }
+            nameInput.setAttribute('list', datalistId);
+            
+            // Update suggestions when category changes
+            function updateSuggestions() {
+                const category = categorySelect.value;
+                const ingredients = ingredientDatabase[category] || [];
+                
+                datalist.innerHTML = ingredients.map(ing => 
+                    `<option value="${ing.name}">${ing.origin ? ' - ' + ing.origin : ''}</option>`
+                ).join('');
+            }
+            
+            // Auto-fill origin when selecting from suggestions
+            nameInput.addEventListener('input', function() {
+                const category = categorySelect.value;
+                const ingredients = ingredientDatabase[category] || [];
+                const selected = ingredients.find(ing => ing.name === this.value);
+                
+                if (selected && selected.origin) {
+                    originInput.value = selected.origin;
+                }
+            });
+            
+            categorySelect.addEventListener('change', updateSuggestions);
+            updateSuggestions(); // Initial load
+        }
+
+        function addItem() {
+            const name = document.getElementById('itemName').value.trim();
+            const category = document.getElementById('itemCategory').value;
+            const quantity = parseFloat(document.getElementById('itemQuantity').value);
+            const unit = document.getElementById('itemUnit').value;
+            const origin = document.getElementById('itemOrigin').value.trim();
+            const notes = document.getElementById('itemNotes').value.trim();
+
+            if (!name || isNaN(quantity)) {
+                alert('Veuillez remplir au moins le nom et la quantité');
+                return;
+            }
+
+            const item = {
+                id: Date.now(),
+                name,
+                category,
+                quantity,
+                unit,
+                origin,
+                notes,
+                dateAdded: new Date().toISOString()
+            };
+
+            inventory.push(item);
+            saveToLocal();
+            renderAllTabs();
+            
+            // Switch to the category tab of the added item
+            switchTab(category);
+
+            // Clear form
+            document.getElementById('itemName').value = '';
+            document.getElementById('itemQuantity').value = '';
+            document.getElementById('itemOrigin').value = '';
+            document.getElementById('itemNotes').value = '';
+        }
+
+        function deleteItem(id) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cet ingrédient ?')) {
+                inventory = inventory.filter(item => item.id !== id);
+                saveToLocal();
+                renderAllTabs();
+            }
+        }
+
+        function updateQuantity(id, newQuantity) {
+            const item = inventory.find(i => i.id === id);
+            if (item) {
+                item.quantity = parseFloat(newQuantity);
+                saveToLocal();
+                renderAllTabs();
+            }
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // Update tab buttons
+            document.querySelectorAll('[id^="tab-"]').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('[id^="content-"]').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`content-${tab}`).classList.add('active');
+        }
+
+        function updateBadges() {
+            const counts = {
+                all: inventory.length,
+                malt: inventory.filter(i => i.category === 'malt').length,
+                houblon: inventory.filter(i => i.category === 'houblon').length,
+                levure: inventory.filter(i => i.category === 'levure').length,
+                autre: inventory.filter(i => i.category === 'autre').length
+            };
+            
+            Object.keys(counts).forEach(key => {
+                const badge = document.getElementById(`badge-${key}`);
+                if (badge) {
+                    badge.textContent = counts[key];
+                }
+            });
+        }
+
+        function renderAllTabs() {
+            const categories = ['all', 'malt', 'houblon', 'levure', 'autre'];
+            
+            categories.forEach(category => {
+                renderTab(category);
+            });
+            
+            updateBadges();
+        }
+
+        function renderTab(category) {
+            const container = document.getElementById(`inventoryList-${category}`);
+            const emptyMessage = document.getElementById(`emptyMessage-${category}`);
+            
+            if (!container || !emptyMessage) return;
+            
+            const filtered = category === 'all' 
+                ? inventory 
+                : inventory.filter(item => item.category === category);
+
+            if (filtered.length === 0) {
+                container.innerHTML = '';
+                emptyMessage.style.display = 'block';
+                return;
+            }
+
+            emptyMessage.style.display = 'none';
+
+            container.innerHTML = filtered.map((item, index) => `
+                <div class="inventory-item animate-slide-in" style="animation-delay: ${index * 0.05}s; opacity: 0;">
+                    <div class="flex justify-between items-start gap-4 flex-wrap">
+                        <div class="flex-1 min-w-[250px]">
+                            <div class="flex items-center gap-3 mb-3">
+                                <h3 class="font-bold text-xl text-white">${item.name}</h3>
+                                <span class="category-badge ${item.category}">${item.category}</span>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-sm">
+                                ${item.origin ? `
+                                    <div class="flex items-center gap-2 text-gray-400">
+                                        <span class="text-amber-500">📍</span>
+                                        <span>${item.origin}</span>
+                                    </div>
+                                ` : ''}
+                                ${item.notes ? `
+                                    <div class="flex items-center gap-2 text-gray-400">
+                                        <span class="text-amber-500">📝</span>
+                                        <span>${item.notes}</span>
+                                    </div>
+                                ` : ''}
+                                <div class="flex items-center gap-2 text-gray-400">
+                                    <span class="text-amber-500">📅</span>
+                                    <span>${new Date(item.dateAdded).toLocaleDateString('fr-FR')}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="text-right">
+                                <div class="flex items-center gap-2">
+                                    <input 
+                                        type="number" 
+                                        value="${item.quantity}" 
+                                        onchange="updateQuantity(${item.id}, this.value)"
+                                        class="quantity-input"
+                                        step="0.01"
+                                    >
+                                    <span class="text-gray-400 font-semibold text-lg">${item.unit}</span>
+                                </div>
+                            </div>
+                            <button 
+                                onclick="deleteItem(${item.id})" 
+                                class="delete-btn"
+                                title="Supprimer"
+                            >🗑️</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function saveToLocal() {
+            localStorage.setItem('brewingInventory', JSON.stringify(inventory));
+        }
+
+        function toggleCollapsible(id) {
+            const content = document.getElementById(`collapsible-${id}`);
+            const header = content.previousElementSibling;
+            
+            // Close all other collapsibles
+            document.querySelectorAll('.collapsible-content').forEach(el => {
+                if (el.id !== `collapsible-${id}`) {
+                    el.classList.remove('active');
+                    el.previousElementSibling.classList.remove('active');
+                }
+            });
+            
+            // Toggle current
+            content.classList.toggle('active');
+            header.classList.toggle('active');
+        }
+
+        // GitHub Functions
+        async function saveToGitHub() {
+            const token = document.getElementById('githubToken').value.trim();
+            const repo = document.getElementById('githubRepo').value.trim();
+            const file = document.getElementById('githubFile').value.trim();
+            
+            if (!token || !repo || !file) {
+                showStatus('Veuillez remplir tous les champs GitHub', 'error');
+                return;
+            }
+
+            // Save config
+            localStorage.setItem('githubToken', token);
+            localStorage.setItem('githubRepo', repo);
+            localStorage.setItem('githubFile', file);
+
+            try {
+                showStatus('Sauvegarde en cours...', 'info');
+
+                const content = btoa(unescape(encodeURIComponent(JSON.stringify(inventory, null, 2))));
+                const url = `https://api.github.com/repos/${repo}/contents/${file}`;
+
+                const body = {
+                    message: `Update inventory - ${new Date().toISOString()}`,
+                    content: content
+                };
+
+                if (githubSha) {
+                    body.sha = githubSha;
+                }
+
+                const response = await fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    githubSha = data.content.sha;
+                    showStatus('✅ Sauvegardé avec succès sur GitHub!', 'success');
+                } else {
+                    const error = await response.json();
+                    showStatus(`❌ Erreur: ${error.message}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`❌ Erreur: ${error.message}`, 'error');
+            }
+        }
+
+        async function loadFromGitHub() {
+            const token = document.getElementById('githubToken').value.trim();
+            const repo = document.getElementById('githubRepo').value.trim();
+            const file = document.getElementById('githubFile').value.trim();
+            
+            if (!token || !repo || !file) {
+                showStatus('Veuillez remplir tous les champs GitHub', 'error');
+                return;
+            }
+
+            try {
+                showStatus('Chargement en cours...', 'info');
+
+                const url = `https://api.github.com/repos/${repo}/contents/${file}`;
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `token ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    githubSha = data.sha;
+                    const content = decodeURIComponent(escape(atob(data.content)));
+                    inventory = JSON.parse(content);
+                    saveToLocal();
+                    renderAllTabs();
+                    showStatus('✅ Chargé avec succès depuis GitHub!', 'success');
+                } else if (response.status === 404) {
+                    showStatus('ℹ️ Fichier non trouvé sur GitHub. Vous pouvez sauvegarder pour le créer.', 'info');
+                } else {
+                    const error = await response.json();
+                    showStatus(`❌ Erreur: ${error.message}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`❌ Erreur: ${error.message}`, 'error');
+            }
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('githubStatus');
+            const classes = {
+                success: 'status-success',
+                error: 'status-error',
+                info: 'status-info'
+            };
+            statusDiv.className = `status-message ${classes[type]}`;
+            statusDiv.textContent = message;
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusDiv.textContent = '';
+                    statusDiv.className = '';
+                }, 3000);
+            }
+        }
+
+        // Export/Import Functions
+        function exportToJSON() {
+            const dataStr = JSON.stringify(inventory, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `brewing-inventory-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function exportToCSV() {
+            if (inventory.length === 0) {
+                alert('Aucune donnée à exporter');
+                return;
+            }
+
+            const headers = ['Nom', 'Catégorie', 'Quantité', 'Unité', 'Origine', 'Notes', 'Date Ajout'];
+            const rows = inventory.map(item => [
+                item.name,
+                item.category,
+                item.quantity,
+                item.unit,
+                item.origin || '',
+                item.notes || '',
+                new Date(item.dateAdded).toLocaleDateString('fr-FR')
+            ]);
+
+            const csv = [
+                headers.join(','),
+                ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+            ].join('\n');
+
+            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `brewing-inventory-${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importFromJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (Array.isArray(imported)) {
+                        if (confirm(`Importer ${imported.length} ingrédients ? Cela remplacera l'inventaire actuel.`)) {
+                            inventory = imported;
+                            saveToLocal();
+                            renderAllTabs();
+                            alert('✅ Import réussi!');
+                        }
+                    } else {
+                        alert('❌ Format JSON invalide');
+                    }
+                } catch (error) {
+                    alert('❌ Erreur lors de l\'import: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+    </script>
+</body>
+</html>
