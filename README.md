@@ -1,3 +1,3 @@
 **Is's a brewing inventory system.**
 
-Code with Claude.
+Coded with Claude.
