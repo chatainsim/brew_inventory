@@ -410,64 +410,387 @@
             padding: 1.5rem;
         }
         
+        /* Compact inventory table */
+        .inventory-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .inventory-table thead tr {
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .inventory-table thead th {
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+        }
+
+        .inventory-table thead th.th-right {
+            text-align: right;
+        }
+
         .inventory-item {
-            background: rgba(26, 26, 26, 0.4);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: 20px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
+            border-bottom: 1px solid rgba(42, 42, 42, 0.6);
+            transition: background 0.2s ease;
         }
-        
-        .inventory-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--accent-amber);
-            opacity: 0;
-            transition: opacity 0.3s ease;
+
+        .inventory-item:last-child {
+            border-bottom: none;
         }
-        
+
         .inventory-item:hover {
-            background: rgba(26, 26, 26, 0.7);
-            border-color: rgba(255, 149, 0, 0.3);
-            transform: translateX(4px);
+            background: rgba(255, 149, 0, 0.04);
         }
-        
-        .inventory-item:hover::before {
-            opacity: 1;
+
+        .inventory-item td {
+            padding: 9px 12px;
+            vertical-align: middle;
         }
-        
-        .delete-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            color: #ef4444;
+
+        .item-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            white-space: nowrap;
+            max-width: 220px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .item-origin {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            max-width: 160px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .item-notes {
+            font-size: 0.78rem;
+            color: rgba(160,160,160,0.6);
+            font-style: italic;
+            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .item-qty-cell {
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .quantity-input {
+            width: 72px;
+            text-align: right;
+            font-weight: 700;
+            font-size: 0.95rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid transparent;
+            border-radius: 6px;
+            padding: 4px 8px;
+            color: var(--text-primary);
+            font-family: 'Work Sans', sans-serif;
+            transition: border-color 0.2s;
+        }
+
+        .quantity-input:focus {
+            outline: none;
+            border-color: var(--accent-amber);
+        }
+
+        .item-unit {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-left: 4px;
+        }
+
+        .item-date {
+            font-size: 0.75rem;
+            color: rgba(160,160,160,0.5);
+            white-space: nowrap;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 6px;
+            justify-content: flex-end;
+        }
+
+        .edit-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 7px;
+            background: rgba(255, 149, 0, 0.08);
+            border: 1px solid rgba(255, 149, 0, 0.2);
+            color: var(--accent-amber);
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            font-size: 0.85rem;
         }
-        
-        .delete-btn:hover {
-            background: rgba(239, 68, 68, 0.2);
+
+        .edit-btn:hover {
+            background: rgba(255, 149, 0, 0.2);
             transform: scale(1.1);
         }
-        
-        .quantity-input {
-            width: 100px;
-            text-align: right;
-            font-weight: 700;
+
+        .delete-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 7px;
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+        }
+
+        .use-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 7px;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            color: #10b981;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+        }
+
+        .use-btn:hover {
+            background: rgba(16, 185, 129, 0.2);
+            transform: scale(1.1);
+        }
+
+        .spec-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .ebc-badge {
+            background: rgba(217, 119, 6, 0.15);
+            color: #f59e0b;
+            border: 1px solid rgba(217, 119, 6, 0.25);
+        }
+
+        .alpha-badge {
+            background: rgba(16, 185, 129, 0.12);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+
+        .low-stock {
+            opacity: 0.55;
+        }
+
+        .qty-empty {
+            color: #ef4444 !important;
+            border-color: rgba(239, 68, 68, 0.4) !important;
+        }
+
+        /* Use stock modal */
+        .use-modal-info {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+        }
+
+        .use-modal-name {
             font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .use-modal-stock {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .use-modal-stock span {
+            color: var(--accent-amber);
+            font-weight: 700;
+        }
+
+        .use-input-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .use-input-row input {
+            flex: 1;
             background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--border-subtle);
+            color: var(--text-primary);
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-family: 'Work Sans', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            transition: border-color 0.3s;
+        }
+
+        .use-input-row input:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+        }
+
+        .use-unit-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            min-width: 40px;
+        }
+
+        .use-preview {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            min-height: 20px;
+            transition: color 0.2s;
+        }
+
+        .use-preview.ok { color: #10b981; }
+        .use-preview.warn { color: #f59e0b; }
+        .use-preview.error { color: #ef4444; }
+
+        .btn-use-confirm {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            font-weight: 700;
+            padding: 10px 24px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Work Sans', sans-serif;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-use-confirm:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Edit Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-card {
+            background: #1a1a1a;
+            border: 1px solid rgba(255,149,0,0.3);
+            border-radius: 20px;
+            padding: 32px;
+            width: 100%;
+            max-width: 540px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.7);
+            animation: fadeInUp 0.25s ease-out;
+        }
+
+        .modal-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-amber), var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .modal-full {
+            grid-column: 1 / -1;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, var(--accent-amber) 0%, var(--accent-gold) 100%);
+            color: #000;
+            font-weight: 700;
+            padding: 10px 24px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Work Sans', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(255,149,0,0.4);
+        }
+
+        .btn-cancel {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-muted);
+            font-weight: 500;
+            padding: 10px 24px;
+            border-radius: 10px;
+            border: 1px solid var(--border-subtle);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Work Sans', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .btn-cancel:hover {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
         }
         
         .section-title {
@@ -629,6 +952,24 @@
             padding: 10px;
         }
         
+        .form-select optgroup {
+            background: #111111;
+            color: var(--accent-amber);
+            font-style: normal;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.03em;
+            padding: 8px 4px 4px;
+        }
+        
+        .form-select optgroup option {
+            background: #1a1a1a;
+            color: var(--text-primary);
+            font-style: normal;
+            font-weight: 400;
+            padding-left: 16px;
+        }
+        
         .btn-add-item {
             width: 100%;
             background: linear-gradient(135deg, var(--accent-amber) 0%, var(--accent-gold) 100%);
@@ -687,6 +1028,140 @@
         
         .btn-add-item:hover .btn-arrow {
             transform: translateX(4px);
+        }
+
+        /* ── Combobox searchable dropdown ── */
+        .combobox {
+            position: relative;
+        }
+        .combobox-input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .combobox-search-icon {
+            position: absolute;
+            left: 14px;
+            font-size: 0.95rem;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.6;
+        }
+        .combobox-input {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid var(--border-subtle);
+            color: var(--text-primary);
+            padding: 14px 40px 14px 42px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-family: 'Work Sans', sans-serif;
+            font-size: 1rem;
+        }
+        .combobox-input:focus {
+            outline: none;
+            border-color: var(--accent-amber);
+            background: rgba(255,255,255,0.08);
+            box-shadow: 0 0 0 4px rgba(255,149,0,0.1);
+        }
+        .combobox-input::placeholder { color: rgba(160,160,160,0.5); }
+        .combobox-input.has-value {
+            border-color: rgba(255,149,0,0.5);
+            background: rgba(255,149,0,0.05);
+        }
+        .combobox-clear {
+            position: absolute;
+            right: 12px;
+            background: rgba(255,255,255,0.08);
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .combobox-clear:hover { background: rgba(239,68,68,0.2); color: #ef4444; }
+        .combobox-dropdown {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            background: #1c1c1c;
+            border: 1px solid rgba(255,149,0,0.3);
+            border-radius: 12px;
+            z-index: 100;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            animation: fadeInUp 0.15s ease-out;
+        }
+        .combobox-list {
+            overflow-y: auto;
+            max-height: 300px;
+        }
+        .combobox-list::-webkit-scrollbar { width: 4px; }
+        .combobox-list::-webkit-scrollbar-track { background: transparent; }
+        .combobox-list::-webkit-scrollbar-thumb { background: rgba(255,149,0,0.3); border-radius: 2px; }
+        .combobox-group-label {
+            padding: 8px 14px 4px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent-amber);
+            background: rgba(255,149,0,0.05);
+            border-top: 1px solid rgba(255,149,0,0.08);
+            position: sticky;
+            top: 0;
+        }
+        .combobox-group-label:first-child { border-top: none; }
+        .combobox-option {
+            padding: 9px 14px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            transition: background 0.12s;
+        }
+        .combobox-option:hover, .combobox-option.focused { background: rgba(255,149,0,0.1); }
+        .combobox-option.selected { background: rgba(255,149,0,0.15); color: var(--accent-gold); }
+        .combobox-option-name { flex: 1; font-weight: 500; }
+        .combobox-option-name mark {
+            background: rgba(255,149,0,0.3);
+            color: var(--accent-gold);
+            border-radius: 2px;
+            padding: 0 1px;
+        }
+        .combobox-option-meta { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+        .combobox-option-origin { font-size: 0.73rem; color: var(--text-muted); }
+        .combobox-option-spec {
+            font-size: 0.68rem;
+            font-weight: 600;
+            padding: 1px 6px;
+            border-radius: 8px;
+        }
+        .combobox-option-spec.ebc { background: rgba(217,119,6,0.15); color: #f59e0b; }
+        .combobox-option-spec.alpha { background: rgba(16,185,129,0.12); color: #10b981; }
+        .combobox-option.custom-option {
+            border-top: 1px solid var(--border-subtle);
+            color: var(--accent-amber);
+            font-style: italic;
+            margin-top: 2px;
+        }
+        .combobox-empty { padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.875rem; }
+        .combobox-count {
+            padding: 5px 14px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-subtle);
+            background: rgba(0,0,0,0.15);
         }
     </style>
 </head>
@@ -801,9 +1276,31 @@
                         <label class="form-label">
                             <span class="label-icon">🏷️</span>
                             <span>Nom</span>
-                            <span class="label-hint">💡 Suggestions disponibles</span>
+                            <span class="label-hint" id="ingredientCount">0 ingrédients</span>
                         </label>
-                        <input type="text" id="itemName" placeholder="Ex: Pilsner Malt, Cascade..." class="form-input">
+                        <div class="combobox" id="ingredientCombobox">
+                            <div class="combobox-input-wrap">
+                                <span class="combobox-search-icon">🔍</span>
+                                <input
+                                    type="text"
+                                    id="ingredientSearch"
+                                    class="combobox-input"
+                                    placeholder="Rechercher un ingrédient..."
+                                    autocomplete="off"
+                                    oninput="filterIngredients(this.value)"
+                                    onfocus="openCombobox()"
+                                    onkeydown="comboboxKeydown(event)"
+                                >
+                                <button type="button" class="combobox-clear" id="comboboxClear" onclick="clearIngredientSearch()" style="display:none;" title="Effacer">✕</button>
+                            </div>
+                            <div class="combobox-dropdown" id="ingredientDropdown" style="display:none;">
+                                <div class="combobox-list" id="ingredientList"></div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="itemName">
+                        <div id="customNameWrapper" style="display:none; margin-top: 10px;">
+                            <input type="text" id="itemNameCustom" placeholder="Saisir le nom de l'ingrédient..." class="form-input">
+                        </div>
                     </div>
                 </div>
                 
@@ -853,6 +1350,26 @@
                     </div>
                 </div>
                 
+                <!-- Row 4: Spec field (EBC for malt, Alpha acid for houblon) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="specFieldRow" style="display:none;">
+                    <div class="form-group" id="ebcGroup" style="display:none;">
+                        <label class="form-label">
+                            <span class="label-icon">🎨</span>
+                            <span>EBC</span>
+                            <span class="label-hint">Couleur du malt</span>
+                        </label>
+                        <input type="number" id="itemEbc" placeholder="Ex: 4, 120, 400..." step="0.1" min="0" class="form-input">
+                    </div>
+                    <div class="form-group" id="alphaGroup" style="display:none;">
+                        <label class="form-label">
+                            <span class="label-icon">⚗️</span>
+                            <span>Acides alpha (%)</span>
+                            <span class="label-hint">Amertume</span>
+                        </label>
+                        <input type="number" id="itemAlpha" placeholder="Ex: 5.5, 12.5..." step="0.1" min="0" max="30" class="form-input">
+                    </div>
+                </div>
+
                 <!-- Submit Button -->
                 <div class="pt-4">
                     <button onclick="addItem()" class="btn-add-item">
@@ -945,245 +1462,245 @@
         const ingredientDatabase = {
             malt: [
                 // Base Malts
-                { name: 'Pilsner Malt', origin: 'Allemagne' },
-                { name: 'Pale Ale Malt', origin: 'UK' },
-                { name: 'Pale Malt 2-Row', origin: 'USA' },
-                { name: 'Pale Malt 6-Row', origin: 'USA' },
-                { name: 'Maris Otter', origin: 'UK' },
-                { name: 'Golden Promise', origin: 'UK' },
-                { name: 'Vienna Malt', origin: 'Autriche' },
-                { name: 'Munich Malt Type I', origin: 'Allemagne' },
-                { name: 'Munich Malt Type II', origin: 'Allemagne' },
-                { name: 'Wheat Malt', origin: 'Allemagne' },
-                { name: 'Wheat Malt', origin: 'Belgique' },
-                { name: 'Rye Malt (Seigle)', origin: 'Allemagne' },
-                { name: 'Oat Malt (Avoine)', origin: 'UK' },
-                { name: 'Mild Ale Malt', origin: 'UK' },
-                { name: 'Marris Otter Heritage', origin: 'UK' },
+                { name: 'Pilsner Malt', origin: 'Allemagne', ebc: 3 },
+                { name: 'Pale Ale Malt', origin: 'UK', ebc: 6 },
+                { name: 'Pale Malt 2-Row', origin: 'USA', ebc: 5 },
+                { name: 'Pale Malt 6-Row', origin: 'USA', ebc: 5 },
+                { name: 'Maris Otter', origin: 'UK', ebc: 6 },
+                { name: 'Golden Promise', origin: 'UK', ebc: 6 },
+                { name: 'Vienna Malt', origin: 'Autriche', ebc: 9 },
+                { name: 'Munich Malt Type I', origin: 'Allemagne', ebc: 14 },
+                { name: 'Munich Malt Type II', origin: 'Allemagne', ebc: 20 },
+                { name: 'Wheat Malt', origin: 'Allemagne', ebc: 4 },
+                { name: 'Wheat Malt', origin: 'Belgique', ebc: 4 },
+                { name: 'Rye Malt (Seigle)', origin: 'Allemagne', ebc: 7 },
+                { name: 'Oat Malt (Avoine)', origin: 'UK', ebc: 5 },
+                { name: 'Mild Ale Malt', origin: 'UK', ebc: 8 },
+                { name: 'Marris Otter Heritage', origin: 'UK', ebc: 6 },
                 
                 // Crystal/Caramel Malts
-                { name: 'Caramel/Crystal 10L', origin: 'USA' },
-                { name: 'Caramel/Crystal 20L', origin: 'USA' },
-                { name: 'Caramel/Crystal 30L', origin: 'USA' },
-                { name: 'Caramel/Crystal 40L', origin: 'USA' },
-                { name: 'Caramel/Crystal 60L', origin: 'USA' },
-                { name: 'Caramel/Crystal 80L', origin: 'USA' },
-                { name: 'Caramel/Crystal 120L', origin: 'USA' },
-                { name: 'Caramel Pils', origin: 'Allemagne' },
-                { name: 'Caramunich I', origin: 'Allemagne' },
-                { name: 'Caramunich II', origin: 'Allemagne' },
-                { name: 'Caramunich III', origin: 'Allemagne' },
-                { name: 'Caravienne', origin: 'Belgique' },
-                { name: 'Cara Red', origin: 'Allemagne' },
-                { name: 'Cara Hell', origin: 'Allemagne' },
-                { name: 'Cara Aroma', origin: 'Allemagne' },
-                { name: 'Cara Bohemian', origin: 'Allemagne' },
-                { name: 'Carafoam', origin: 'Allemagne' },
-                { name: 'Crystal Medium', origin: 'UK' },
-                { name: 'Crystal Dark', origin: 'UK' },
+                { name: 'Caramel/Crystal 10L', origin: 'USA', ebc: 20 },
+                { name: 'Caramel/Crystal 20L', origin: 'USA', ebc: 39 },
+                { name: 'Caramel/Crystal 30L', origin: 'USA', ebc: 59 },
+                { name: 'Caramel/Crystal 40L', origin: 'USA', ebc: 79 },
+                { name: 'Caramel/Crystal 60L', origin: 'USA', ebc: 118 },
+                { name: 'Caramel/Crystal 80L', origin: 'USA', ebc: 158 },
+                { name: 'Caramel/Crystal 120L', origin: 'USA', ebc: 236 },
+                { name: 'Caramel Pils', origin: 'Allemagne', ebc: 5 },
+                { name: 'Caramunich I', origin: 'Allemagne', ebc: 90 },
+                { name: 'Caramunich II', origin: 'Allemagne', ebc: 120 },
+                { name: 'Caramunich III', origin: 'Allemagne', ebc: 160 },
+                { name: 'Caravienne', origin: 'Belgique', ebc: 50 },
+                { name: 'Cara Red', origin: 'Allemagne', ebc: 50 },
+                { name: 'Cara Hell', origin: 'Allemagne', ebc: 25 },
+                { name: 'Cara Aroma', origin: 'Allemagne', ebc: 300 },
+                { name: 'Cara Bohemian', origin: 'Allemagne', ebc: 80 },
+                { name: 'Carafoam', origin: 'Allemagne', ebc: 4 },
+                { name: 'Crystal Medium', origin: 'UK', ebc: 150 },
+                { name: 'Crystal Dark', origin: 'UK', ebc: 300 },
                 
                 // Roasted/Dark Malts
-                { name: 'Chocolate Malt', origin: 'UK' },
-                { name: 'Chocolate Malt', origin: 'USA' },
-                { name: 'Chocolate Rye', origin: 'Allemagne' },
-                { name: 'Chocolate Wheat', origin: 'Allemagne' },
-                { name: 'Black Malt', origin: 'UK' },
-                { name: 'Black Patent Malt', origin: 'USA' },
-                { name: 'Roasted Barley', origin: 'UK' },
-                { name: 'Carafa I', origin: 'Allemagne' },
-                { name: 'Carafa II', origin: 'Allemagne' },
-                { name: 'Carafa III', origin: 'Allemagne' },
-                { name: 'Carafa Special I', origin: 'Allemagne' },
-                { name: 'Carafa Special II', origin: 'Allemagne' },
-                { name: 'Carafa Special III', origin: 'Allemagne' },
-                { name: 'Midnight Wheat', origin: 'USA' },
-                { name: 'Blackprinz', origin: 'Allemagne' },
+                { name: 'Chocolate Malt', origin: 'UK', ebc: 900 },
+                { name: 'Chocolate Malt', origin: 'USA', ebc: 800 },
+                { name: 'Chocolate Rye', origin: 'Allemagne', ebc: 600 },
+                { name: 'Chocolate Wheat', origin: 'Allemagne', ebc: 700 },
+                { name: 'Black Malt', origin: 'UK', ebc: 1300 },
+                { name: 'Black Patent Malt', origin: 'USA', ebc: 1400 },
+                { name: 'Roasted Barley', origin: 'UK', ebc: 1200 },
+                { name: 'Carafa I', origin: 'Allemagne', ebc: 900 },
+                { name: 'Carafa II', origin: 'Allemagne', ebc: 1150 },
+                { name: 'Carafa III', origin: 'Allemagne', ebc: 1400 },
+                { name: 'Carafa Special I', origin: 'Allemagne', ebc: 900 },
+                { name: 'Carafa Special II', origin: 'Allemagne', ebc: 1150 },
+                { name: 'Carafa Special III', origin: 'Allemagne', ebc: 1400 },
+                { name: 'Midnight Wheat', origin: 'USA', ebc: 1000 },
+                { name: 'Blackprinz', origin: 'Allemagne', ebc: 1200 },
                 
                 // Specialty Malts
-                { name: 'Amber Malt', origin: 'UK' },
-                { name: 'Brown Malt', origin: 'UK' },
-                { name: 'Biscuit Malt', origin: 'Belgique' },
-                { name: 'Victory Malt', origin: 'USA' },
-                { name: 'Aromatic Malt', origin: 'Belgique' },
-                { name: 'Melanoidin Malt', origin: 'Allemagne' },
-                { name: 'Special B', origin: 'Belgique' },
-                { name: 'Abbey Malt', origin: 'Belgique' },
-                { name: 'Munich Malt', origin: 'Belgique' },
-                { name: 'Honey Malt', origin: 'Canada' },
-                { name: 'Gambrinus Honey', origin: 'Canada' },
-                { name: 'Briess Victory', origin: 'USA' },
-                { name: 'Briess Special Roast', origin: 'USA' },
+                { name: 'Amber Malt', origin: 'UK', ebc: 70 },
+                { name: 'Brown Malt', origin: 'UK', ebc: 150 },
+                { name: 'Biscuit Malt', origin: 'Belgique', ebc: 45 },
+                { name: 'Victory Malt', origin: 'USA', ebc: 50 },
+                { name: 'Aromatic Malt', origin: 'Belgique', ebc: 70 },
+                { name: 'Melanoidin Malt', origin: 'Allemagne', ebc: 70 },
+                { name: 'Special B', origin: 'Belgique', ebc: 300 },
+                { name: 'Abbey Malt', origin: 'Belgique', ebc: 30 },
+                { name: 'Munich Malt', origin: 'Belgique', ebc: 25 },
+                { name: 'Honey Malt', origin: 'Canada', ebc: 50 },
+                { name: 'Gambrinus Honey', origin: 'Canada', ebc: 50 },
+                { name: 'Briess Victory', origin: 'USA', ebc: 50 },
+                { name: 'Briess Special Roast', origin: 'USA', ebc: 100 },
                 
                 // Acidulated/Technical Malts
-                { name: 'Acidulated Malt (Sauermalz)', origin: 'Allemagne' },
-                { name: 'Acid Malt', origin: 'Weyermann' },
+                { name: 'Acidulated Malt (Sauermalz)', origin: 'Allemagne', ebc: 4 },
+                { name: 'Acid Malt', origin: 'Weyermann', ebc: 4 },
                 
                 // Smoked Malts
-                { name: 'Beechwood Smoked Malt', origin: 'Allemagne' },
-                { name: 'Rauchmalz', origin: 'Allemagne' },
-                { name: 'Cherry Smoked Malt', origin: 'USA' },
-                { name: 'Peated Malt', origin: 'UK' },
-                { name: 'Mesquite Smoked Malt', origin: 'USA' },
+                { name: 'Beechwood Smoked Malt', origin: 'Allemagne', ebc: 5 },
+                { name: 'Rauchmalz', origin: 'Allemagne', ebc: 5 },
+                { name: 'Cherry Smoked Malt', origin: 'USA', ebc: 5 },
+                { name: 'Peated Malt', origin: 'UK', ebc: 5 },
+                { name: 'Mesquite Smoked Malt', origin: 'USA', ebc: 5 },
                 
                 // Torrified/Flaked Grains
-                { name: 'Torrified Wheat', origin: 'UK' },
-                { name: 'Torrified Barley', origin: 'UK' },
-                { name: 'Flaked Oats', origin: 'USA' },
-                { name: 'Flaked Barley', origin: 'UK' },
-                { name: 'Flaked Wheat', origin: 'USA' },
-                { name: 'Flaked Rye', origin: 'USA' },
-                { name: 'Flaked Corn (Maize)', origin: 'USA' },
-                { name: 'Flaked Rice', origin: 'USA' },
+                { name: 'Torrified Wheat', origin: 'UK', ebc: 3 },
+                { name: 'Torrified Barley', origin: 'UK', ebc: 3 },
+                { name: 'Flaked Oats', origin: 'USA', ebc: 2 },
+                { name: 'Flaked Barley', origin: 'UK', ebc: 2 },
+                { name: 'Flaked Wheat', origin: 'USA', ebc: 2 },
+                { name: 'Flaked Rye', origin: 'USA', ebc: 4 },
+                { name: 'Flaked Corn (Maize)', origin: 'USA', ebc: 1 },
+                { name: 'Flaked Rice', origin: 'USA', ebc: 1 },
                 
                 // Other Specialty
-                { name: 'Dextrin Malt (Cara-Pils)', origin: 'USA' },
-                { name: 'Light Munich', origin: 'Allemagne' },
-                { name: 'Dark Munich', origin: 'Allemagne' },
-                { name: 'Pale Chocolate', origin: 'UK' },
-                { name: 'Extra Pale Malt', origin: 'Belgique' },
-                { name: 'Château Pilsen', origin: 'Belgique' },
-                { name: 'Château Munich', origin: 'Belgique' },
-                { name: 'Château Vienna', origin: 'Belgique' },
-                { name: 'Château Wheat', origin: 'Belgique' },
-                { name: 'Château Café', origin: 'Belgique' }
+                { name: 'Dextrin Malt (Cara-Pils)', origin: 'USA', ebc: 3 },
+                { name: 'Light Munich', origin: 'Allemagne', ebc: 14 },
+                { name: 'Dark Munich', origin: 'Allemagne', ebc: 25 },
+                { name: 'Pale Chocolate', origin: 'UK', ebc: 600 },
+                { name: 'Extra Pale Malt', origin: 'Belgique', ebc: 3 },
+                { name: 'Château Pilsen', origin: 'Belgique', ebc: 3 },
+                { name: 'Château Munich', origin: 'Belgique', ebc: 25 },
+                { name: 'Château Vienna', origin: 'Belgique', ebc: 9 },
+                { name: 'Château Wheat', origin: 'Belgique', ebc: 4 },
+                { name: 'Château Café', origin: 'Belgique', ebc: 900 }
             ],
             houblon: [
                 // American Hops
-                { name: 'Cascade', origin: 'USA' },
-                { name: 'Centennial', origin: 'USA' },
-                { name: 'Chinook', origin: 'USA' },
-                { name: 'Columbus (CTZ)', origin: 'USA' },
-                { name: 'Tomahawk (CTZ)', origin: 'USA' },
-                { name: 'Zeus (CTZ)', origin: 'USA' },
-                { name: 'Citra', origin: 'USA' },
-                { name: 'Mosaic', origin: 'USA' },
-                { name: 'Simcoe', origin: 'USA' },
-                { name: 'Amarillo', origin: 'USA' },
-                { name: 'Warrior', origin: 'USA' },
-                { name: 'Magnum', origin: 'USA' },
-                { name: 'Nugget', origin: 'USA' },
-                { name: 'Willamette', origin: 'USA' },
-                { name: 'Mt. Hood', origin: 'USA' },
-                { name: 'Liberty', origin: 'USA' },
-                { name: 'Crystal', origin: 'USA' },
-                { name: 'Sterling', origin: 'USA' },
-                { name: 'Vanguard', origin: 'USA' },
-                { name: 'Azacca', origin: 'USA' },
-                { name: 'El Dorado', origin: 'USA' },
-                { name: 'Ekuanot (Equinox)', origin: 'USA' },
-                { name: 'Lemondrop', origin: 'USA' },
-                { name: 'Pekko', origin: 'USA' },
-                { name: 'Sabro', origin: 'USA' },
-                { name: 'Idaho 7', origin: 'USA' },
-                { name: 'Strata', origin: 'USA' },
-                { name: 'Sultana', origin: 'USA' },
-                { name: 'Talus', origin: 'USA' },
-                { name: 'Triumph', origin: 'USA' },
-                { name: 'Glacier', origin: 'USA' },
-                { name: 'Santiam', origin: 'USA' },
-                { name: 'Summit', origin: 'USA' },
-                { name: 'Apollo', origin: 'USA' },
-                { name: 'Bravo', origin: 'USA' },
-                { name: 'HBC 472', origin: 'USA' },
-                { name: 'Cashmere', origin: 'USA' },
-                { name: 'Comet', origin: 'USA' },
+                { name: 'Cascade', origin: 'USA', alpha: 5.5 },
+                { name: 'Centennial', origin: 'USA', alpha: 10.0 },
+                { name: 'Chinook', origin: 'USA', alpha: 12.0 },
+                { name: 'Columbus (CTZ)', origin: 'USA', alpha: 15.0 },
+                { name: 'Tomahawk (CTZ)', origin: 'USA', alpha: 15.0 },
+                { name: 'Zeus (CTZ)', origin: 'USA', alpha: 15.0 },
+                { name: 'Citra', origin: 'USA', alpha: 12.0 },
+                { name: 'Mosaic', origin: 'USA', alpha: 12.5 },
+                { name: 'Simcoe', origin: 'USA', alpha: 13.0 },
+                { name: 'Amarillo', origin: 'USA', alpha: 9.0 },
+                { name: 'Warrior', origin: 'USA', alpha: 16.0 },
+                { name: 'Magnum', origin: 'USA', alpha: 14.0 },
+                { name: 'Nugget', origin: 'USA', alpha: 13.0 },
+                { name: 'Willamette', origin: 'USA', alpha: 5.0 },
+                { name: 'Mt. Hood', origin: 'USA', alpha: 5.0 },
+                { name: 'Liberty', origin: 'USA', alpha: 4.5 },
+                { name: 'Crystal', origin: 'USA', alpha: 3.5 },
+                { name: 'Sterling', origin: 'USA', alpha: 7.0 },
+                { name: 'Vanguard', origin: 'USA', alpha: 5.5 },
+                { name: 'Azacca', origin: 'USA', alpha: 15.0 },
+                { name: 'El Dorado', origin: 'USA', alpha: 15.0 },
+                { name: 'Ekuanot (Equinox)', origin: 'USA', alpha: 15.0 },
+                { name: 'Lemondrop', origin: 'USA', alpha: 6.0 },
+                { name: 'Pekko', origin: 'USA', alpha: 13.0 },
+                { name: 'Sabro', origin: 'USA', alpha: 15.0 },
+                { name: 'Idaho 7', origin: 'USA', alpha: 13.0 },
+                { name: 'Strata', origin: 'USA', alpha: 13.0 },
+                { name: 'Sultana', origin: 'USA', alpha: 14.0 },
+                { name: 'Talus', origin: 'USA', alpha: 8.5 },
+                { name: 'Triumph', origin: 'USA', alpha: 9.0 },
+                { name: 'Glacier', origin: 'USA', alpha: 5.5 },
+                { name: 'Santiam', origin: 'USA', alpha: 6.0 },
+                { name: 'Summit', origin: 'USA', alpha: 17.0 },
+                { name: 'Apollo', origin: 'USA', alpha: 19.0 },
+                { name: 'Bravo', origin: 'USA', alpha: 15.0 },
+                { name: 'HBC 472', origin: 'USA', alpha: 13.0 },
+                { name: 'Cashmere', origin: 'USA', alpha: 8.0 },
+                { name: 'Comet', origin: 'USA', alpha: 9.5 },
                 
                 // German Hops
-                { name: 'Hallertau Mittelfrüh', origin: 'Allemagne' },
-                { name: 'Hallertau Tradition', origin: 'Allemagne' },
-                { name: 'Hallertau Hersbrucker', origin: 'Allemagne' },
-                { name: 'Hallertau Blanc', origin: 'Allemagne' },
-                { name: 'Tettnanger', origin: 'Allemagne' },
-                { name: 'Spalt', origin: 'Allemagne' },
-                { name: 'Perle', origin: 'Allemagne' },
-                { name: 'Northern Brewer', origin: 'Allemagne' },
-                { name: 'Magnum', origin: 'Allemagne' },
-                { name: 'Merkur', origin: 'Allemagne' },
-                { name: 'Opal', origin: 'Allemagne' },
-                { name: 'Polaris', origin: 'Allemagne' },
-                { name: 'Herkules', origin: 'Allemagne' },
-                { name: 'Taurus', origin: 'Allemagne' },
-                { name: 'Callista', origin: 'Allemagne' },
-                { name: 'Mandarina Bavaria', origin: 'Allemagne' },
-                { name: 'Huell Melon', origin: 'Allemagne' },
-                { name: 'Saphir', origin: 'Allemagne' },
-                { name: 'Select', origin: 'Allemagne' },
-                { name: 'Smaragd', origin: 'Allemagne' },
+                { name: 'Hallertau Mittelfrüh', origin: 'Allemagne', alpha: 4.0 },
+                { name: 'Hallertau Tradition', origin: 'Allemagne', alpha: 6.0 },
+                { name: 'Hallertau Hersbrucker', origin: 'Allemagne', alpha: 3.5 },
+                { name: 'Hallertau Blanc', origin: 'Allemagne', alpha: 10.0 },
+                { name: 'Tettnanger', origin: 'Allemagne', alpha: 4.5 },
+                { name: 'Spalt', origin: 'Allemagne', alpha: 4.5 },
+                { name: 'Perle', origin: 'Allemagne', alpha: 8.0 },
+                { name: 'Northern Brewer', origin: 'Allemagne', alpha: 9.0 },
+                { name: 'Magnum', origin: 'Allemagne', alpha: 14.0 },
+                { name: 'Merkur', origin: 'Allemagne', alpha: 13.5 },
+                { name: 'Opal', origin: 'Allemagne', alpha: 8.0 },
+                { name: 'Polaris', origin: 'Allemagne', alpha: 20.0 },
+                { name: 'Herkules', origin: 'Allemagne', alpha: 16.0 },
+                { name: 'Taurus', origin: 'Allemagne', alpha: 14.5 },
+                { name: 'Callista', origin: 'Allemagne', alpha: 3.5 },
+                { name: 'Mandarina Bavaria', origin: 'Allemagne', alpha: 8.5 },
+                { name: 'Huell Melon', origin: 'Allemagne', alpha: 7.0 },
+                { name: 'Saphir', origin: 'Allemagne', alpha: 4.0 },
+                { name: 'Select', origin: 'Allemagne', alpha: 4.5 },
+                { name: 'Smaragd', origin: 'Allemagne', alpha: 5.5 },
                 
                 // UK Hops
-                { name: 'East Kent Golding', origin: 'UK' },
-                { name: 'Fuggle', origin: 'UK' },
-                { name: 'Challenger', origin: 'UK' },
-                { name: 'Target', origin: 'UK' },
-                { name: 'First Gold', origin: 'UK' },
-                { name: 'Admiral', origin: 'UK' },
-                { name: 'Bramling Cross', origin: 'UK' },
-                { name: 'Phoenix', origin: 'UK' },
-                { name: 'Progress', origin: 'UK' },
-                { name: 'Northdown', origin: 'UK' },
-                { name: 'Pilgrim', origin: 'UK' },
-                { name: 'Pioneer', origin: 'UK' },
-                { name: 'Sovereign', origin: 'UK' },
-                { name: 'Whitbread Golding Variety', origin: 'UK' },
-                { name: 'Jester', origin: 'UK' },
-                { name: 'Olicana', origin: 'UK' },
-                { name: 'Endeavour', origin: 'UK' },
-                { name: 'Godiva', origin: 'UK' },
+                { name: 'East Kent Golding', origin: 'UK', alpha: 5.0 },
+                { name: 'Fuggle', origin: 'UK', alpha: 4.5 },
+                { name: 'Challenger', origin: 'UK', alpha: 8.0 },
+                { name: 'Target', origin: 'UK', alpha: 11.0 },
+                { name: 'First Gold', origin: 'UK', alpha: 7.5 },
+                { name: 'Admiral', origin: 'UK', alpha: 14.0 },
+                { name: 'Bramling Cross', origin: 'UK', alpha: 6.5 },
+                { name: 'Phoenix', origin: 'UK', alpha: 10.0 },
+                { name: 'Progress', origin: 'UK', alpha: 6.0 },
+                { name: 'Northdown', origin: 'UK', alpha: 8.5 },
+                { name: 'Pilgrim', origin: 'UK', alpha: 10.5 },
+                { name: 'Pioneer', origin: 'UK', alpha: 9.0 },
+                { name: 'Sovereign', origin: 'UK', alpha: 5.5 },
+                { name: 'Whitbread Golding Variety', origin: 'UK', alpha: 6.0 },
+                { name: 'Jester', origin: 'UK', alpha: 8.5 },
+                { name: 'Olicana', origin: 'UK', alpha: 7.5 },
+                { name: 'Endeavour', origin: 'UK', alpha: 8.5 },
+                { name: 'Godiva', origin: 'UK', alpha: 6.5 },
                 
                 // Czech Hops
-                { name: 'Saaz', origin: 'République Tchèque' },
-                { name: 'Premiant', origin: 'République Tchèque' },
-                { name: 'Sladek', origin: 'République Tchèque' },
-                { name: 'Kazbek', origin: 'République Tchèque' },
+                { name: 'Saaz', origin: 'République Tchèque', alpha: 3.5 },
+                { name: 'Premiant', origin: 'République Tchèque', alpha: 9.0 },
+                { name: 'Sladek', origin: 'République Tchèque', alpha: 7.5 },
+                { name: 'Kazbek', origin: 'République Tchèque', alpha: 6.5 },
                 
                 // New Zealand Hops
-                { name: 'Nelson Sauvin', origin: 'Nouvelle-Zélande' },
-                { name: 'Motueka', origin: 'Nouvelle-Zélande' },
-                { name: 'Riwaka', origin: 'Nouvelle-Zélande' },
-                { name: 'Wakatu', origin: 'Nouvelle-Zélande' },
-                { name: 'Wai-iti', origin: 'Nouvelle-Zélande' },
-                { name: 'Kohatu', origin: 'Nouvelle-Zélande' },
-                { name: 'Rakau', origin: 'Nouvelle-Zélande' },
-                { name: 'Pacifica', origin: 'Nouvelle-Zélande' },
-                { name: 'Pacific Jade', origin: 'Nouvelle-Zélande' },
-                { name: 'Pacific Gem', origin: 'Nouvelle-Zélande' },
-                { name: 'Taiheke', origin: 'Nouvelle-Zélande' },
-                { name: 'Nectaron', origin: 'Nouvelle-Zélande' },
+                { name: 'Nelson Sauvin', origin: 'Nouvelle-Zélande', alpha: 12.5 },
+                { name: 'Motueka', origin: 'Nouvelle-Zélande', alpha: 7.0 },
+                { name: 'Riwaka', origin: 'Nouvelle-Zélande', alpha: 5.5 },
+                { name: 'Wakatu', origin: 'Nouvelle-Zélande', alpha: 7.0 },
+                { name: 'Wai-iti', origin: 'Nouvelle-Zélande', alpha: 3.0 },
+                { name: 'Kohatu', origin: 'Nouvelle-Zélande', alpha: 7.0 },
+                { name: 'Rakau', origin: 'Nouvelle-Zélande', alpha: 11.0 },
+                { name: 'Pacifica', origin: 'Nouvelle-Zélande', alpha: 5.5 },
+                { name: 'Pacific Jade', origin: 'Nouvelle-Zélande', alpha: 13.0 },
+                { name: 'Pacific Gem', origin: 'Nouvelle-Zélande', alpha: 15.0 },
+                { name: 'Taiheke', origin: 'Nouvelle-Zélande', alpha: 9.0 },
+                { name: 'Nectaron', origin: 'Nouvelle-Zélande', alpha: 10.0 },
                 
                 // Australian Hops
-                { name: 'Galaxy', origin: 'Australie' },
-                { name: 'Ella', origin: 'Australie' },
-                { name: 'Vic Secret', origin: 'Australie' },
-                { name: 'Enigma', origin: 'Australie' },
-                { name: 'Topaz', origin: 'Australie' },
-                { name: 'Summer', origin: 'Australie' },
-                { name: 'Pride of Ringwood', origin: 'Australie' },
-                { name: 'Helga', origin: 'Australie' },
+                { name: 'Galaxy', origin: 'Australie', alpha: 14.0 },
+                { name: 'Ella', origin: 'Australie', alpha: 15.0 },
+                { name: 'Vic Secret', origin: 'Australie', alpha: 16.0 },
+                { name: 'Enigma', origin: 'Australie', alpha: 15.0 },
+                { name: 'Topaz', origin: 'Australie', alpha: 17.0 },
+                { name: 'Summer', origin: 'Australie', alpha: 6.0 },
+                { name: 'Pride of Ringwood', origin: 'Australie', alpha: 9.5 },
+                { name: 'Helga', origin: 'Australie', alpha: 5.5 },
                 
                 // Slovenian Hops
-                { name: 'Styrian Golding', origin: 'Slovénie' },
-                { name: 'Bobek', origin: 'Slovénie' },
-                { name: 'Celeia', origin: 'Slovénie' },
-                { name: 'Aurora', origin: 'Slovénie' },
+                { name: 'Styrian Golding', origin: 'Slovénie', alpha: 5.5 },
+                { name: 'Bobek', origin: 'Slovénie', alpha: 7.0 },
+                { name: 'Celeia', origin: 'Slovénie', alpha: 4.5 },
+                { name: 'Aurora', origin: 'Slovénie', alpha: 8.5 },
                 
                 // French Hops
-                { name: 'Strisselspalt', origin: 'France' },
-                { name: 'Aramis', origin: 'France' },
-                { name: 'Mistral', origin: 'France' },
-                { name: 'Triskel', origin: 'France' },
-                { name: 'Barbe Rouge', origin: 'France' },
-                { name: 'Elixir', origin: 'France' },
+                { name: 'Strisselspalt', origin: 'France', alpha: 3.5 },
+                { name: 'Aramis', origin: 'France', alpha: 8.0 },
+                { name: 'Mistral', origin: 'France', alpha: 6.0 },
+                { name: 'Triskel', origin: 'France', alpha: 9.0 },
+                { name: 'Barbe Rouge', origin: 'France', alpha: 8.5 },
+                { name: 'Elixir', origin: 'France', alpha: 13.5 },
                 
                 // Polish Hops
-                { name: 'Lubelski', origin: 'Pologne' },
-                { name: 'Marynka', origin: 'Pologne' },
+                { name: 'Lubelski', origin: 'Pologne', alpha: 4.0 },
+                { name: 'Marynka', origin: 'Pologne', alpha: 10.0 },
                 
                 // Japanese Hops
-                { name: 'Sorachi Ace', origin: 'Japon' },
+                { name: 'Sorachi Ace', origin: 'Japon', alpha: 13.0 },
                 
                 // Belgian Hops
-                { name: 'Brewers Gold', origin: 'Belgique' },
-                { name: 'Hallertau', origin: 'Belgique' }
+                { name: 'Brewers Gold', origin: 'Belgique', alpha: 8.5 },
+                { name: 'Hallertau', origin: 'Belgique', alpha: 4.0 }
             ],
             levure: [
                 // Fermentis Dry Yeasts
@@ -1472,53 +1989,332 @@
             setupAutocomplete();
         };
 
+        // ── Combobox state ───────────────────────────────────────────────────
+        let _cbIngredients = [];   // flat list for current category
+        let _cbGrouped = {};       // grouped for current category
+        let _cbSelected = null;    // currently selected ingredient object
+        let _cbFocusedIdx = -1;    // keyboard nav index
+        let _cbAllOptions = [];    // all rendered options (flat, for keyboard nav)
+
         function setupAutocomplete() {
-            const nameInput = document.getElementById('itemName');
             const categorySelect = document.getElementById('itemCategory');
-            const originInput = document.getElementById('itemOrigin');
-            const datalistId = 'ingredientSuggestions';
-            
-            // Create datalist element
-            let datalist = document.getElementById(datalistId);
-            if (!datalist) {
-                datalist = document.createElement('datalist');
-                datalist.id = datalistId;
-                document.body.appendChild(datalist);
-            }
-            nameInput.setAttribute('list', datalistId);
-            
-            // Update suggestions when category changes
-            function updateSuggestions() {
-                const category = categorySelect.value;
-                const ingredients = ingredientDatabase[category] || [];
-                
-                datalist.innerHTML = ingredients.map(ing => 
-                    `<option value="${ing.name}">${ing.origin ? ' - ' + ing.origin : ''}</option>`
-                ).join('');
-            }
-            
-            // Auto-fill origin when selecting from suggestions
-            nameInput.addEventListener('input', function() {
-                const category = categorySelect.value;
-                const ingredients = ingredientDatabase[category] || [];
-                const selected = ingredients.find(ing => ing.name === this.value);
-                
-                if (selected && selected.origin) {
-                    originInput.value = selected.origin;
+            categorySelect.addEventListener('change', populateIngredientSelect);
+            populateIngredientSelect();
+            // Close on outside click
+            document.addEventListener('click', function(e) {
+                if (!document.getElementById('ingredientCombobox').contains(e.target)) {
+                    closeCombobox();
                 }
             });
-            
-            categorySelect.addEventListener('change', updateSuggestions);
-            updateSuggestions(); // Initial load
+        }
+
+        function populateIngredientSelect() {
+            const category = document.getElementById('itemCategory').value;
+            const countEl = document.getElementById('ingredientCount');
+
+            // Reset state
+            _cbSelected = null;
+            _cbFocusedIdx = -1;
+            document.getElementById('ingredientSearch').value = '';
+            document.getElementById('ingredientSearch').classList.remove('has-value');
+            document.getElementById('comboboxClear').style.display = 'none';
+            document.getElementById('customNameWrapper').style.display = 'none';
+            document.getElementById('itemName').value = '';
+            document.getElementById('itemOrigin').value = '';
+            document.getElementById('itemEbc').value = '';
+            document.getElementById('itemAlpha').value = '';
+
+            // Show/hide spec fields
+            const specRow = document.getElementById('specFieldRow');
+            const ebcGroup = document.getElementById('ebcGroup');
+            const alphaGroup = document.getElementById('alphaGroup');
+            if (category === 'malt') {
+                specRow.style.display = '';
+                ebcGroup.style.display = '';
+                alphaGroup.style.display = 'none';
+            } else if (category === 'houblon') {
+                specRow.style.display = '';
+                ebcGroup.style.display = 'none';
+                alphaGroup.style.display = '';
+            } else {
+                specRow.style.display = 'none';
+            }
+
+            _cbIngredients = ingredientDatabase[category] || [];
+            _cbGrouped = groupIngredients(category, _cbIngredients);
+            countEl.textContent = `${_cbIngredients.length} ingrédients`;
+            closeCombobox();
+        }
+
+        function openCombobox() {
+            filterIngredients(document.getElementById('ingredientSearch').value);
+        }
+
+        function closeCombobox() {
+            document.getElementById('ingredientDropdown').style.display = 'none';
+            _cbFocusedIdx = -1;
+        }
+
+        function clearIngredientSearch() {
+            _cbSelected = null;
+            document.getElementById('ingredientSearch').value = '';
+            document.getElementById('ingredientSearch').classList.remove('has-value');
+            document.getElementById('comboboxClear').style.display = 'none';
+            document.getElementById('itemName').value = '';
+            document.getElementById('customNameWrapper').style.display = 'none';
+            document.getElementById('itemOrigin').value = '';
+            document.getElementById('itemEbc').value = '';
+            document.getElementById('itemAlpha').value = '';
+            document.getElementById('ingredientSearch').focus();
+            filterIngredients('');
+        }
+
+        function filterIngredients(query) {
+            const q = query.trim().toLowerCase();
+            const dropdown = document.getElementById('ingredientDropdown');
+            const list = document.getElementById('ingredientList');
+            dropdown.style.display = 'block';
+            _cbFocusedIdx = -1;
+            _cbAllOptions = [];
+
+            // Show/hide clear button
+            document.getElementById('comboboxClear').style.display = query ? 'flex' : 'none';
+
+            let html = '';
+            let totalShown = 0;
+
+            if (q === '') {
+                // Show all grouped
+                for (const [groupName, items] of Object.entries(_cbGrouped)) {
+                    html += `<div class="combobox-group-label">${groupName}</div>`;
+                    items.forEach(ing => {
+                        const isSelected = _cbSelected && _cbSelected.name === ing.name;
+                        html += renderOption(ing, q, isSelected);
+                        _cbAllOptions.push(ing);
+                        totalShown++;
+                    });
+                }
+            } else {
+                // Filter across all groups
+                const matched = _cbIngredients.filter(ing =>
+                    ing.name.toLowerCase().includes(q) ||
+                    (ing.origin && ing.origin.toLowerCase().includes(q))
+                );
+                if (matched.length === 0) {
+                    html = `<div class="combobox-empty">Aucun résultat pour "<strong>${escapeHtml(query)}</strong>"</div>`;
+                } else {
+                    html += `<div class="combobox-count">${matched.length} résultat${matched.length > 1 ? 's' : ''}</div>`;
+                    matched.forEach(ing => {
+                        const isSelected = _cbSelected && _cbSelected.name === ing.name;
+                        html += renderOption(ing, q, isSelected);
+                        _cbAllOptions.push(ing);
+                        totalShown++;
+                    });
+                }
+            }
+
+            // Always add "custom" option at bottom
+            html += `<div class="combobox-option custom-option" onclick="selectCustomOption()" data-custom="true">✏️ Saisie libre...</div>`;
+
+            list.innerHTML = html;
+        }
+
+        function renderOption(ing, q, isSelected) {
+            const idx = _cbAllOptions.length;
+            let nameHtml = escapeHtml(ing.name);
+            if (q) {
+                const re = new RegExp('(' + escapeRegex(q) + ')', 'gi');
+                nameHtml = escapeHtml(ing.name).replace(re, '<mark>$1</mark>');
+            }
+            let specHtml = '';
+            if (ing.ebc != null) specHtml = `<span class="combobox-option-spec ebc">${ing.ebc} EBC</span>`;
+            if (ing.alpha != null) specHtml = `<span class="combobox-option-spec alpha">${ing.alpha}% α</span>`;
+
+            return `<div class="combobox-option${isSelected ? ' selected' : ''}" 
+                        onclick="selectIngredient(${idx})" 
+                        data-idx="${idx}">
+                        <span class="combobox-option-name">${nameHtml}</span>
+                        <span class="combobox-option-meta">
+                            ${ing.origin ? `<span class="combobox-option-origin">${escapeHtml(ing.origin)}</span>` : ''}
+                            ${specHtml}
+                        </span>
+                    </div>`;
+        }
+
+        function selectIngredient(idx) {
+            const ing = _cbAllOptions[idx];
+            if (!ing) return;
+            _cbSelected = ing;
+
+            const searchEl = document.getElementById('ingredientSearch');
+            searchEl.value = ing.name;
+            searchEl.classList.add('has-value');
+            document.getElementById('comboboxClear').style.display = 'flex';
+            document.getElementById('itemName').value = ing.name;
+            document.getElementById('customNameWrapper').style.display = 'none';
+
+            // Auto-fill
+            document.getElementById('itemOrigin').value = ing.origin || '';
+            document.getElementById('itemEbc').value = ing.ebc != null ? ing.ebc : '';
+            document.getElementById('itemAlpha').value = ing.alpha != null ? ing.alpha : '';
+
+            closeCombobox();
+        }
+
+        function selectCustomOption() {
+            _cbSelected = { name: '__custom__' };
+            document.getElementById('ingredientSearch').value = '✏️ Saisie libre';
+            document.getElementById('ingredientSearch').classList.add('has-value');
+            document.getElementById('comboboxClear').style.display = 'flex';
+            document.getElementById('itemName').value = '__custom__';
+            document.getElementById('customNameWrapper').style.display = 'block';
+            document.getElementById('itemOrigin').value = '';
+            document.getElementById('itemEbc').value = '';
+            document.getElementById('itemAlpha').value = '';
+            document.getElementById('itemNameCustom').focus();
+            closeCombobox();
+        }
+
+        function comboboxKeydown(e) {
+            const dropdown = document.getElementById('ingredientDropdown');
+            if (dropdown.style.display === 'none') {
+                if (e.key === 'ArrowDown' || e.key === 'Enter') openCombobox();
+                return;
+            }
+            const options = document.querySelectorAll('#ingredientList .combobox-option:not(.custom-option)');
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                _cbFocusedIdx = Math.min(_cbFocusedIdx + 1, options.length - 1);
+                updateFocus(options);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                _cbFocusedIdx = Math.max(_cbFocusedIdx - 1, -1);
+                updateFocus(options);
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (_cbFocusedIdx >= 0 && options[_cbFocusedIdx]) {
+                    options[_cbFocusedIdx].click();
+                } else if (_cbAllOptions.length === 1) {
+                    selectIngredient(0);
+                }
+            } else if (e.key === 'Escape') {
+                closeCombobox();
+            }
+        }
+
+        function updateFocus(options) {
+            options.forEach((opt, i) => {
+                opt.classList.toggle('focused', i === _cbFocusedIdx);
+                if (i === _cbFocusedIdx) opt.scrollIntoView({ block: 'nearest' });
+            });
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        function escapeRegex(str) {
+            return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function groupIngredients(category, ingredients) {
+            const groups = {
+                malt: {
+                    '🌾 Malts de Base': ['Pilsner Malt', 'Pale Ale Malt', 'Pale Malt 2-Row', 'Pale Malt 6-Row', 'Maris Otter', 'Golden Promise', 'Vienna Malt', 'Munich Malt Type I', 'Munich Malt Type II', 'Wheat Malt', 'Rye Malt (Seigle)', 'Oat Malt (Avoine)', 'Mild Ale Malt', 'Marris Otter Heritage'],
+                    '🍬 Malts Crystal / Caramel': ['Caramel/Crystal 10L', 'Caramel/Crystal 20L', 'Caramel/Crystal 30L', 'Caramel/Crystal 40L', 'Caramel/Crystal 60L', 'Caramel/Crystal 80L', 'Caramel/Crystal 120L', 'Caramel Pils', 'Caramunich I', 'Caramunich II', 'Caramunich III', 'Caravienne', 'Cara Red', 'Cara Hell', 'Cara Aroma', 'Cara Bohemian', 'Carafoam', 'Crystal Medium', 'Crystal Dark'],
+                    '🍫 Malts Torréfiés / Foncés': ['Chocolate Malt', 'Chocolate Rye', 'Chocolate Wheat', 'Black Malt', 'Black Patent Malt', 'Roasted Barley', 'Carafa I', 'Carafa II', 'Carafa III', 'Carafa Special I', 'Carafa Special II', 'Carafa Special III', 'Midnight Wheat', 'Blackprinz'],
+                    '✨ Malts Spéciaux': ['Amber Malt', 'Brown Malt', 'Biscuit Malt', 'Victory Malt', 'Aromatic Malt', 'Melanoidin Malt', 'Special B', 'Abbey Malt', 'Honey Malt', 'Gambrinus Honey', 'Briess Victory', 'Briess Special Roast'],
+                    '🔬 Malts Techniques': ['Acidulated Malt (Sauermalz)', 'Acid Malt', 'Dextrin Malt (Cara-Pils)'],
+                    '🔥 Malts Fumés': ['Beechwood Smoked Malt', 'Rauchmalz', 'Cherry Smoked Malt', 'Peated Malt', 'Mesquite Smoked Malt'],
+                    '🌀 Flocons & Torrifiés': ['Torrified Wheat', 'Torrified Barley', 'Flaked Oats', 'Flaked Barley', 'Flaked Wheat', 'Flaked Rye', 'Flaked Corn (Maize)', 'Flaked Rice'],
+                    '🏰 Château (Belgique)': ['Château Pilsen', 'Château Munich', 'Château Vienna', 'Château Wheat', 'Château Café'],
+                    '🌙 Autres Malts': null
+                },
+                houblon: {
+                    '🇺🇸 Houblons Américains': ['Cascade', 'Centennial', 'Chinook', 'Columbus (CTZ)', 'Tomahawk (CTZ)', 'Zeus (CTZ)', 'Citra', 'Mosaic', 'Simcoe', 'Amarillo', 'Warrior', 'Magnum', 'Nugget', 'Willamette', 'Mt. Hood', 'Liberty', 'Crystal', 'Sterling', 'Vanguard', 'Azacca', 'El Dorado', 'Ekuanot (Equinox)', 'Lemondrop', 'Pekko', 'Sabro', 'Idaho 7', 'Strata', 'Sultana', 'Talus', 'Triumph', 'Glacier', 'Santiam', 'Summit', 'Apollo', 'Bravo', 'HBC 472', 'Cashmere', 'Comet'],
+                    '🇩🇪 Houblons Allemands': ['Hallertau Mittelfrüh', 'Hallertau Tradition', 'Hallertau Hersbrucker', 'Hallertau Blanc', 'Tettnanger', 'Spalt', 'Perle', 'Northern Brewer', 'Merkur', 'Opal', 'Polaris', 'Herkules', 'Taurus', 'Callista', 'Mandarina Bavaria', 'Huell Melon', 'Saphir', 'Select', 'Smaragd'],
+                    '🇬🇧 Houblons Anglais': ['East Kent Golding', 'Fuggle', 'Challenger', 'Target', 'First Gold', 'Admiral', 'Bramling Cross', 'Phoenix', 'Progress', 'Northdown', 'Pilgrim', 'Pioneer', 'Sovereign', 'Whitbread Golding Variety', 'Jester', 'Olicana', 'Endeavour', 'Godiva'],
+                    '🇨🇿 Houblons Tchèques': ['Saaz', 'Premiant', 'Sladek', 'Kazbek'],
+                    '🇳🇿 Houblons Néo-Zélandais': ['Nelson Sauvin', 'Motueka', 'Riwaka', 'Wakatu', 'Wai-iti', 'Kohatu', 'Rakau', 'Pacifica', 'Pacific Jade', 'Pacific Gem', 'Taiheke', 'Nectaron'],
+                    '🇦🇺 Houblons Australiens': ['Galaxy', 'Ella', 'Vic Secret', 'Enigma', 'Topaz', 'Summer', 'Pride of Ringwood', 'Helga'],
+                    '🇸🇮 Houblons Slovènes': ['Styrian Golding', 'Bobek', 'Celeia', 'Aurora'],
+                    '🇫🇷 Houblons Français': ['Strisselspalt', 'Aramis', 'Mistral', 'Triskel', 'Barbe Rouge', 'Elixir'],
+                    '🌍 Autres Origines': null
+                },
+                levure: {
+                    '🔴 Fermentis (Sèche)': ['Safale US-05', 'Safale S-04', 'Safale S-33', 'Safale K-97', 'Safbrew WB-06', 'Safbrew T-58', 'Safbrew S-33', 'Safbrew BE-134', 'Safbrew BE-256', 'Safbrew LA-01', 'Saflager W-34/70', 'Saflager S-23', 'Saflager S-189', 'Saflager W-68'],
+                    '🟡 Lallemand (Sèche)': ['Lallemand Nottingham', 'Lallemand Windsor', 'Lallemand Belle Saison', 'Lallemand Abbaye', 'Lallemand Munich Classic', 'Lallemand Diamond Lager', 'Lallemand BRY-97', 'Lallemand New England', 'Lallemand Verdant IPA', 'Lallemand Voss Kveik', 'Lallemand Koln', 'Lallemand Munich Wheat', 'Lallemand Farmhouse', 'Lallemand LalBrew Wit', 'Lallemand Danstar CBC-1'],
+                    '🟠 Mangrove Jack\'s (Sèche)': ['Mangrove Jack M42 - New World Strong Ale', 'Mangrove Jack M44 - US West Coast Ale', 'Mangrove Jack M36 - Liberty Bell Ale', 'Mangrove Jack M15 - Empire Ale', 'Mangrove Jack M76 - Bavarian Lager', 'Mangrove Jack M84 - Bohemian Lager', 'Mangrove Jack M20 - Bavarian Wheat', 'Mangrove Jack M47 - Belgian Abbey', 'Mangrove Jack M31 - Belgian Tripel', 'Mangrove Jack M29 - French Saison', 'Mangrove Jack M41 - Belgian Wit'],
+                    '🔵 Wyeast (Liquide)': ingredients.filter(i => i.origin === 'Wyeast').map(i => i.name),
+                    '⚪ White Labs (Liquide)': ingredients.filter(i => i.origin === 'White Labs').map(i => i.name),
+                    '🟣 Imperial Organic (Liquide)': ingredients.filter(i => i.origin && i.origin.startsWith('Imperial')).map(i => i.name),
+                    '🌿 Kveik & Spéciales': ['Lallemand Voss Kveik', 'Omega Hothead (OYL-057)', 'Omega Lutra (OYL-071)', 'Omega DIPA (OYL-052)', 'BrewFerm Blanche', 'Danstar Munich'],
+                    '🔬 Autres Levures': null
+                },
+                autre: {
+                    '🍬 Sucres & Sirops': ['Sucre de candi blanc', 'Sucre de candi brun foncé', 'Sucre de candi brun clair', 'Sucre de candi ambre', 'Sirop de candi blanc', 'Sirop de candi brun', 'Sirop de candi D-45', 'Sirop de candi D-90', 'Sirop de candi D-180', 'Miel toutes fleurs', 'Miel d\'acacia', 'Miel de châtaignier', 'Miel de lavande', 'Sirop d\'érable', 'Cassonade', 'Sucre roux', 'Sucre blanc', 'Dextrose (glucose)', 'Lactose', 'Mélasse', 'Sirop d\'agave', 'Turbinado', 'Demerara', 'Muscovado'],
+                    '🌾 Flocons & Grains Non Maltés': ['Flocons d\'avoine', 'Flocons de blé', 'Flocons d\'orge', 'Flocons de riz', 'Flocons de maïs', 'Flocons de seigle', 'Gritz de maïs', 'Riz brassicole'],
+                    '🔬 Agents de Clarification': ['Irish Moss', 'Whirlfloc', 'Clarity Ferm', 'Isinglass', 'Bentonite', 'Polyclar', 'Super Moss', 'Protafloc'],
+                    '💧 Traitement de l\'Eau': ['Gypse (Sulfate de calcium)', 'Chlorure de calcium', 'Sel d\'Epsom (Sulfate de magnésium)', 'Bicarbonate de sodium', 'Craie (Carbonate de calcium)', 'Chlorure de sodium (sel)', 'Acide lactique', 'Acide phosphorique', 'Acide citrique', 'Campden tablets (métabisulfite)'],
+                    '🧪 Nutriments & Additifs': ['Nutriment de levure', 'Diammonium phosphate (DAP)', 'Servomyces', 'Zinc', 'Calcium'],
+                    '🌿 Épices & Botaniques': ['Coriandre (graines)', 'Écorces d\'orange amère (Curaçao)', 'Écorces d\'orange douce', 'Écorces de citron', 'Écorces de pamplemousse', 'Gingembre frais', 'Gingembre séché', 'Cardamome', 'Cannelle (bâtons)', 'Cannelle (poudre)', 'Clous de girofle', 'Noix de muscade', 'Anis étoilé', 'Graines de paradis', 'Poivre noir', 'Poivre de Sichuan', 'Piments séchés', 'Vanille (gousses)', 'Vanille (extrait)', 'Réglisse', 'Genièvre (baies)', 'Anis vert', 'Fenouil', 'Carvi', 'Fenugrec'],
+                    '☕ Café & Chocolat': ['Café en grains', 'Café moulu', 'Cold brew coffee', 'Expresso', 'Cacao nibs', 'Cacao en poudre', 'Chocolat noir', 'Cacao brut'],
+                    '🍓 Fruits': ['Cerise (Kriek)', 'Framboise', 'Fraise', 'Myrtille', 'Mûre', 'Cassis', 'Pêche', 'Abricot', 'Mangue', 'Fruit de la passion', 'Ananas', 'Noix de coco', 'Banane', 'Citron', 'Lime', 'Orange', 'Pamplemousse', 'Purée de fruits'],
+                    '🪵 Bois & Chêne': ['Copeaux de chêne américain (toasté léger)', 'Copeaux de chêne américain (toasté moyen)', 'Copeaux de chêne américain (toasté fort)', 'Copeaux de chêne français (toasté léger)', 'Copeaux de chêne français (toasté moyen)', 'Copeaux de chêne français (toasté fort)', 'Spirales de chêne', 'Cubes de chêne', 'Douelles de chêne', 'Chêne hongrois', 'Cerisier (bois)', 'Bois de cèdre'],
+                    '🧴 Extraits & Enzymes': ['Extrait de malt liquide (LME)', 'Extrait de malt sec (DME)', 'Extrait de blé', 'Gélatine', 'Agar-agar', 'Pectinase', 'Amylase', 'Glucoamylase', 'Ascorbic acid (vitamine C)', 'Métabisulfite de potassium'],
+                    '🔧 Autres': null
+                }
+            };
+
+            const categoryGroups = groups[category] || {};
+            const result = {};
+            const usedNames = new Set();
+
+            for (const [groupName, nameList] of Object.entries(categoryGroups)) {
+                if (nameList === null) {
+                    // Catch-all group for remaining items
+                    const remaining = ingredients.filter(ing => !usedNames.has(ing.name));
+                    if (remaining.length > 0) {
+                        result[groupName] = remaining;
+                        remaining.forEach(i => usedNames.add(i.name));
+                    }
+                } else {
+                    const groupItems = ingredients.filter(ing => nameList.includes(ing.name) && !usedNames.has(ing.name));
+                    // Remove duplicates within the group
+                    const seen = new Set();
+                    const uniqueItems = groupItems.filter(i => {
+                        if (seen.has(i.name)) return false;
+                        seen.add(i.name);
+                        return true;
+                    });
+                    if (uniqueItems.length > 0) {
+                        result[groupName] = uniqueItems;
+                        uniqueItems.forEach(i => usedNames.add(i.name));
+                    }
+                }
+            }
+
+            // If no grouping defined, return all items in one group
+            if (Object.keys(result).length === 0) {
+                result['Tous les ingrédients'] = ingredients;
+            }
+
+            return result;
         }
 
         function addItem() {
-            const name = document.getElementById('itemName').value.trim();
+            const nameSelect = document.getElementById('itemName');
+            const nameCustom = document.getElementById('itemNameCustom');
+            const name = (nameSelect.value === '__custom__' || nameSelect.value === '')
+                ? (nameSelect.value === '__custom__' ? nameCustom.value.trim() : '')
+                : nameSelect.value.trim();
             const category = document.getElementById('itemCategory').value;
             const quantity = parseFloat(document.getElementById('itemQuantity').value);
             const unit = document.getElementById('itemUnit').value;
             const origin = document.getElementById('itemOrigin').value.trim();
             const notes = document.getElementById('itemNotes').value.trim();
+            const ebcVal = document.getElementById('itemEbc').value;
+            const alphaVal = document.getElementById('itemAlpha').value;
 
             if (!name || isNaN(quantity)) {
                 alert('Veuillez remplir au moins le nom et la quantité');
@@ -1533,6 +2329,8 @@
                 unit,
                 origin,
                 notes,
+                ebc: ebcVal !== '' ? parseFloat(ebcVal) : null,
+                alpha: alphaVal !== '' ? parseFloat(alphaVal) : null,
                 dateAdded: new Date().toISOString()
             };
 
@@ -1544,10 +2342,18 @@
             switchTab(category);
 
             // Clear form
+            _cbSelected = null;
+            document.getElementById('ingredientSearch').value = '';
+            document.getElementById('ingredientSearch').classList.remove('has-value');
+            document.getElementById('comboboxClear').style.display = 'none';
             document.getElementById('itemName').value = '';
+            document.getElementById('itemNameCustom').value = '';
+            document.getElementById('customNameWrapper').style.display = 'none';
             document.getElementById('itemQuantity').value = '';
             document.getElementById('itemOrigin').value = '';
             document.getElementById('itemNotes').value = '';
+            document.getElementById('itemEbc').value = '';
+            document.getElementById('itemAlpha').value = '';
         }
 
         function deleteItem(id) {
@@ -1628,55 +2434,57 @@
 
             emptyMessage.style.display = 'none';
 
-            container.innerHTML = filtered.map((item, index) => `
-                <div class="inventory-item animate-slide-in" style="animation-delay: ${index * 0.05}s; opacity: 0;">
-                    <div class="flex justify-between items-start gap-4 flex-wrap">
-                        <div class="flex-1 min-w-[250px]">
-                            <div class="flex items-center gap-3 mb-3">
-                                <h3 class="font-bold text-xl text-white">${item.name}</h3>
-                                <span class="category-badge ${item.category}">${item.category}</span>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-sm">
-                                ${item.origin ? `
-                                    <div class="flex items-center gap-2 text-gray-400">
-                                        <span class="text-amber-500">📍</span>
-                                        <span>${item.origin}</span>
-                                    </div>
-                                ` : ''}
-                                ${item.notes ? `
-                                    <div class="flex items-center gap-2 text-gray-400">
-                                        <span class="text-amber-500">📝</span>
-                                        <span>${item.notes}</span>
-                                    </div>
-                                ` : ''}
-                                <div class="flex items-center gap-2 text-gray-400">
-                                    <span class="text-amber-500">📅</span>
-                                    <span>${new Date(item.dateAdded).toLocaleDateString('fr-FR')}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <div class="text-right">
-                                <div class="flex items-center gap-2">
+            const showCategory = category === 'all';
+
+            container.innerHTML = `
+                <table class="inventory-table">
+                    <thead>
+                        <tr>
+                            <th>Ingrédient</th>
+                            ${showCategory ? '<th>Cat.</th>' : ''}
+                            <th>Origine</th>
+                            <th>Spec.</th>
+                            <th>Notes</th>
+                            <th class="th-right">Stock</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${filtered.map(item => {
+                            const specBadge = item.ebc != null
+                                ? `<span class="spec-badge ebc-badge">${item.ebc} EBC</span>`
+                                : item.alpha != null
+                                ? `<span class="spec-badge alpha-badge">${item.alpha}% α</span>`
+                                : '<span style="opacity:0.3">—</span>';
+                            const lowStock = item.quantity <= 0;
+                            return `
+                            <tr class="inventory-item${lowStock ? ' low-stock' : ''}">
+                                <td><div class="item-name" title="${item.name}">${item.name}</div></td>
+                                ${showCategory ? `<td><span class="category-badge ${item.category}">${item.category}</span></td>` : ''}
+                                <td><div class="item-origin" title="${item.origin || ''}">${item.origin || '<span style="opacity:0.3">—</span>'}</div></td>
+                                <td>${specBadge}</td>
+                                <td><div class="item-notes" title="${item.notes || ''}">${item.notes || '<span style="opacity:0.3">—</span>'}</div></td>
+                                <td class="item-qty-cell">
                                     <input 
                                         type="number" 
                                         value="${item.quantity}" 
                                         onchange="updateQuantity(${item.id}, this.value)"
-                                        class="quantity-input"
+                                        class="quantity-input${lowStock ? ' qty-empty' : ''}"
                                         step="0.01"
-                                    >
-                                    <span class="text-gray-400 font-semibold text-lg">${item.unit}</span>
-                                </div>
-                            </div>
-                            <button 
-                                onclick="deleteItem(${item.id})" 
-                                class="delete-btn"
-                                title="Supprimer"
-                            >🗑️</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
+                                    ><span class="item-unit">${item.unit}</span>
+                                </td>
+                                <td>
+                                    <div class="item-actions">
+                                        <button onclick="openUseModal(${item.id})" class="use-btn" title="Utiliser / Déduire du stock">🧪</button>
+                                        <button onclick="openEditModal(${item.id})" class="edit-btn" title="Modifier">✏️</button>
+                                        <button onclick="deleteItem(${item.id})" class="delete-btn" title="Supprimer">🗑️</button>
+                                    </div>
+                                </td>
+                            </tr>`;
+                        }).join('')}
+                    </tbody>
+                </table>
+            `;
         }
 
         function saveToLocal() {
@@ -1878,6 +2686,232 @@
             reader.readAsText(file);
             event.target.value = '';
         }
+    </script>
+    <!-- Use Stock Modal -->
+    <div class="modal-overlay" id="useModal" onclick="handleUseOverlayClick(event)">
+        <div class="modal-card" style="max-width: 420px;">
+            <div class="modal-title">🧪 Utiliser du stock</div>
+            <input type="hidden" id="useItemId">
+            <div class="use-modal-info">
+                <div class="use-modal-name" id="useItemName">—</div>
+                <div class="use-modal-stock">Stock actuel : <span id="useItemStock">—</span></div>
+            </div>
+            <label class="form-label" style="margin-bottom:10px;"><span class="label-icon">⚖️</span> Quantité utilisée</label>
+            <div class="use-input-row">
+                <input type="number" id="useAmount" placeholder="0" step="0.01" min="0" oninput="updateUsePreview()">
+                <span class="use-unit-label" id="useUnitLabel">g</span>
+            </div>
+            <div class="use-preview" id="usePreview"></div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeUseModal()">Annuler</button>
+                <button class="btn-use-confirm" onclick="confirmUse()">✅ Déduire du stock</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal-overlay" id="editModal" onclick="handleModalOverlayClick(event)">
+        <div class="modal-card">
+            <div class="modal-title">✏️ Modifier l'ingrédient</div>
+            <input type="hidden" id="editItemId">
+            <div class="modal-grid">
+                <div class="form-group modal-full">
+                    <label class="form-label"><span class="label-icon">🏷️</span> Nom</label>
+                    <input type="text" id="editName" class="form-input" placeholder="Nom de l'ingrédient">
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><span class="label-icon">📁</span> Catégorie</label>
+                    <div class="select-wrapper">
+                        <select id="editCategory" class="form-select" onchange="updateEditSpecFields()">
+                            <option value="malt">🌾 Malt</option>
+                            <option value="houblon">🌿 Houblon</option>
+                            <option value="levure">🧬 Levure</option>
+                            <option value="autre">✨ Autre</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><span class="label-icon">📏</span> Unité</label>
+                    <div class="select-wrapper">
+                        <select id="editUnit" class="form-select">
+                            <option value="g">grammes (g)</option>
+                            <option value="kg">kilogrammes (kg)</option>
+                            <option value="L">litres (L)</option>
+                            <option value="mL">millilitres (mL)</option>
+                            <option value="unité">unité</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><span class="label-icon">⚖️</span> Quantité</label>
+                    <input type="number" id="editQuantity" class="form-input" step="0.01" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><span class="label-icon">🌍</span> Origine / Variété</label>
+                    <input type="text" id="editOrigin" class="form-input" placeholder="Ex: USA, Fermentis...">
+                </div>
+                <div class="form-group" id="editEbcGroup" style="display:none;">
+                    <label class="form-label"><span class="label-icon">🎨</span> EBC <span class="label-hint" style="color:var(--text-muted)">Couleur</span></label>
+                    <input type="number" id="editEbc" class="form-input" step="0.1" min="0" placeholder="Ex: 4, 120...">
+                </div>
+                <div class="form-group" id="editAlphaGroup" style="display:none;">
+                    <label class="form-label"><span class="label-icon">⚗️</span> Acides alpha (%) <span class="label-hint" style="color:var(--text-muted)">Amertume</span></label>
+                    <input type="number" id="editAlpha" class="form-input" step="0.1" min="0" max="30" placeholder="Ex: 5.5...">
+                </div>
+                <div class="form-group modal-full">
+                    <label class="form-label"><span class="label-icon">📝</span> Notes</label>
+                    <input type="text" id="editNotes" class="form-input" placeholder="Notes optionnelles">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeEditModal()">Annuler</button>
+                <button class="btn-save" onclick="saveEdit()">💾 Sauvegarder</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ── Use Stock Modal ──────────────────────────────────────────────────
+        function openUseModal(id) {
+            const item = inventory.find(i => i.id === id);
+            if (!item) return;
+            document.getElementById('useItemId').value = id;
+            document.getElementById('useItemName').textContent = item.name;
+            document.getElementById('useItemStock').textContent = `${item.quantity} ${item.unit}`;
+            document.getElementById('useUnitLabel').textContent = item.unit;
+            document.getElementById('useAmount').value = '';
+            document.getElementById('usePreview').textContent = '';
+            document.getElementById('usePreview').className = 'use-preview';
+            document.getElementById('useModal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => document.getElementById('useAmount').focus(), 100);
+        }
+
+        function closeUseModal() {
+            document.getElementById('useModal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function handleUseOverlayClick(e) {
+            if (e.target === document.getElementById('useModal')) closeUseModal();
+        }
+
+        function updateUsePreview() {
+            const id = parseInt(document.getElementById('useItemId').value);
+            const item = inventory.find(i => i.id === id);
+            if (!item) return;
+            const amount = parseFloat(document.getElementById('useAmount').value);
+            const preview = document.getElementById('usePreview');
+            if (isNaN(amount) || amount <= 0) {
+                preview.textContent = '';
+                preview.className = 'use-preview';
+                return;
+            }
+            const remaining = item.quantity - amount;
+            if (remaining < 0) {
+                preview.textContent = `⚠️ Insuffisant ! Stock : ${item.quantity} ${item.unit}, vous utilisez ${amount} ${item.unit}`;
+                preview.className = 'use-preview error';
+            } else if (remaining === 0) {
+                preview.textContent = `⚠️ Stock épuisé après cette opération`;
+                preview.className = 'use-preview warn';
+            } else {
+                preview.textContent = `→ Stock restant : ${Math.round(remaining * 1000) / 1000} ${item.unit}`;
+                preview.className = 'use-preview ok';
+            }
+        }
+
+        function confirmUse() {
+            const id = parseInt(document.getElementById('useItemId').value);
+            const item = inventory.find(i => i.id === id);
+            if (!item) return;
+            const amount = parseFloat(document.getElementById('useAmount').value);
+            if (isNaN(amount) || amount <= 0) {
+                alert('Veuillez saisir une quantité valide');
+                return;
+            }
+            if (amount > item.quantity) {
+                if (!confirm(`⚠️ Vous utilisez plus que le stock disponible (${item.quantity} ${item.unit}).\nLe stock passera en négatif. Continuer ?`)) return;
+            }
+            item.quantity = Math.round((item.quantity - amount) * 10000) / 10000;
+            saveToLocal();
+            renderAllTabs();
+            closeUseModal();
+        }
+
+        // ── Edit Modal ───────────────────────────────────────────────────────
+        function updateEditSpecFields() {
+            const cat = document.getElementById('editCategory').value;
+            document.getElementById('editEbcGroup').style.display = cat === 'malt' ? '' : 'none';
+            document.getElementById('editAlphaGroup').style.display = cat === 'houblon' ? '' : 'none';
+        }
+
+        function openEditModal(id) {
+            const item = inventory.find(i => i.id === id);
+            if (!item) return;
+
+            document.getElementById('editItemId').value = id;
+            document.getElementById('editName').value = item.name;
+            document.getElementById('editCategory').value = item.category;
+            document.getElementById('editUnit').value = item.unit;
+            document.getElementById('editQuantity').value = item.quantity;
+            document.getElementById('editOrigin').value = item.origin || '';
+            document.getElementById('editNotes').value = item.notes || '';
+            document.getElementById('editEbc').value = item.ebc != null ? item.ebc : '';
+            document.getElementById('editAlpha').value = item.alpha != null ? item.alpha : '';
+            updateEditSpecFields();
+
+            document.getElementById('editModal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => document.getElementById('editName').focus(), 100);
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function handleModalOverlayClick(e) {
+            if (e.target === document.getElementById('editModal')) {
+                closeEditModal();
+            }
+        }
+
+        function saveEdit() {
+            const id = parseInt(document.getElementById('editItemId').value);
+            const item = inventory.find(i => i.id === id);
+            if (!item) return;
+
+            const name = document.getElementById('editName').value.trim();
+            const quantity = parseFloat(document.getElementById('editQuantity').value);
+
+            if (!name || isNaN(quantity)) {
+                alert('Veuillez remplir au moins le nom et la quantité');
+                return;
+            }
+
+            item.name = name;
+            item.category = document.getElementById('editCategory').value;
+            item.unit = document.getElementById('editUnit').value;
+            item.quantity = quantity;
+            item.origin = document.getElementById('editOrigin').value.trim();
+            item.notes = document.getElementById('editNotes').value.trim();
+            const ebcVal = document.getElementById('editEbc').value;
+            const alphaVal = document.getElementById('editAlpha').value;
+            item.ebc = ebcVal !== '' ? parseFloat(ebcVal) : null;
+            item.alpha = alphaVal !== '' ? parseFloat(alphaVal) : null;
+
+            saveToLocal();
+            renderAllTabs();
+            closeEditModal();
+        }
+
+        // Close modals on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeEditModal();
+                closeUseModal();
+            }
+        });
     </script>
 </body>
 </html>
